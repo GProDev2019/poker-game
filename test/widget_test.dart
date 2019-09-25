@@ -1,19 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:poker_game/main.dart';
+import 'package:poker_game/poker_game.dart';
+import 'package:poker_game/poker_game_logic/dispatcher.dart';
+import 'package:poker_game/poker_game_store/poker_game_state.dart';
+import 'package:redux/redux.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    await tester.pumpWidget(MyApp());
-
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    final store = new Store<PokerGameState>(dispatchPokerGameAction,
+        initialState: PokerGameState());
+    await tester.pumpWidget(PokerGame(store));
   });
 }
