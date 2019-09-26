@@ -1,5 +1,4 @@
 import 'package:poker_game/poker_game_store/poker_game_state.dart';
-
 import 'actions.dart';
 
 PokerGameState dispatchPokerGameAction(PokerGameState state, dynamic action) {
@@ -14,7 +13,11 @@ PokerGameState dispatchPokerGameAction(PokerGameState state, dynamic action) {
 }
 
 PokerGameState _startOfflineGame(PokerGameState state) {
-  // ToDo
+  state = _shuffleDeck(state);
+  return state;
+}
+
+PokerGameState _shuffleDeck(PokerGameState state) {
   return state;
 }
 
