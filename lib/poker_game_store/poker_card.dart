@@ -1,21 +1,38 @@
 enum PokerColor { hearts, diamonds, clubs, spades }
 
+enum PokerRank {
+  two,
+  three,
+  four,
+  five,
+  six,
+  seven,
+  eight,
+  nine,
+  ten,
+  jack,
+  queen,
+  king,
+  ace
+}
+
 class PokerCard implements Comparable<PokerCard> {
-  int index;
+  PokerRank rank;
   PokerColor color;
   bool selectedForReplace;
 
-  PokerCard(this.index, this.color, [this.selectedForReplace = false])
-      : assert(minCardIndex <= index && index <= maxCardIndex);
-  static const int minCardIndex = 2;
-  static const int maxCardIndex = 14;
+  PokerCard(this.rank, this.color, [this.selectedForReplace = false])
+      : assert(
+            minCardRank.index <= rank.index && rank.index <= maxCardRank.index);
+  static const PokerRank minCardRank = PokerRank.two;
+  static const PokerRank maxCardRank = PokerRank.ace;
 
   @override
   int compareTo(PokerCard oCard) {
-    if (index == oCard.index) {
+    if (rank == oCard.rank) {
       return color.index - oCard.color.index;
     } else {
-      return index - oCard.index;
+      return rank.index - oCard.rank.index;
     }
   }
 }

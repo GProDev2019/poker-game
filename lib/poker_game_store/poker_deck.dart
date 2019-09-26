@@ -9,10 +9,8 @@ class PokerDeck {
   factory PokerDeck.initial() {
     final List<PokerCard> cards = <PokerCard>[];
     for (PokerColor color in PokerColor.values) {
-      for (int index = PokerCard.minCardIndex;
-          index <= PokerCard.maxCardIndex;
-          index++) {
-        cards.add(PokerCard(index, color));
+      for (PokerRank rank in PokerRank.values) {
+        cards.add(PokerCard(rank, color));
       }
     }
     return PokerDeck(cards);

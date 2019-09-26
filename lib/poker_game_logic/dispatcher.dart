@@ -1,7 +1,9 @@
 import 'package:poker_game/poker_game_store/poker_game_state.dart';
 import 'package:poker_game/poker_game_store/poker_card.dart';
 import 'package:poker_game/poker_game_store/poker_hand.dart';
+import 'package:poker_game/poker_game_store/poker_player.dart';
 import 'actions.dart';
+import 'hand_names.dart';
 
 PokerGameState dispatchPokerGameAction(PokerGameState state, dynamic action) {
   if (action is ChangeNumberOfPlayersAction) {
@@ -74,9 +76,14 @@ PokerGameState _handOutCardToPlayer(PokerGameState state, int playerIndex) {
 
 PokerGameState _sortPlayersCards(PokerGameState state) {
   for (int playerIndex = 0; playerIndex < state.numOfPlayers; playerIndex++) {
-    state.players[playerIndex].hand.cards
-        .sort((PokerCard lCard, PokerCard rCard) => lCard.compareTo(rCard));
+    state = _sortPlayerCards(state, playerIndex);
   }
+  return state;
+}
+
+PokerGameState _sortPlayerCards(PokerGameState state, int playerIndex) {
+  state.players[playerIndex].hand.cards
+      .sort((PokerCard lCard, PokerCard rCard) => lCard.compareTo(rCard));
   return state;
 }
 
@@ -84,7 +91,7 @@ PokerGameState _selectCard(PokerGameState state, SelectCardAction action) {
   state.players[state.currentPlayer].hand.cards
       .firstWhere((PokerCard card) =>
           card.color == action.selectedCard.color &&
-          card.index == action.selectedCard.index)
+          card.rank == action.selectedCard.rank)
       .selectedForReplace = true;
   return state;
 }
@@ -93,7 +100,7 @@ PokerGameState _unselectCard(PokerGameState state, UnselectCardAction action) {
   state.players[state.currentPlayer].hand.cards
       .firstWhere((PokerCard card) =>
           card.color == action.unselectedCard.color &&
-          card.index == action.unselectedCard.index)
+          card.rank == action.unselectedCard.rank)
       .selectedForReplace = false;
   return state;
 }
@@ -107,6 +114,7 @@ PokerGameState _replaceCards(PokerGameState state) {
   for (int cardNum = 0; cardNum < numOfCardsToReplace; cardNum++) {
     state = _handOutCardToPlayer(state, state.currentPlayer);
   }
+  _sortPlayerCards(state, state.currentPlayer);
   return state;
 }
 
@@ -124,5 +132,11 @@ PokerGameState _endGame(PokerGameState state) {
 }
 
 PokerGameState _compareHands(PokerGameState state) {
+  final List<HandStrength> playersHandStrength = <HandStrength>[];
+  for (PokerPlayer player in state.players) {
+    playersHandStrength
+        .add(gHandStrengthChecker.checkHandStrength(player.hand.cards));
+  }
+  playersHandStrength.sort();
   return state;
 }
