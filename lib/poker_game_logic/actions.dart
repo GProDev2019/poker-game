@@ -1,5 +1,10 @@
 import 'package:poker_game/poker_game_store/poker_card.dart';
 
+class ChangeNumberOfPlayersAction {
+  final int numOfPlayers;
+  ChangeNumberOfPlayersAction(this.numOfPlayers);
+}
+
 class StartOfflineGameAction {}
 
 class SelectCardAction {
@@ -13,3 +18,5 @@ class UnselectCardAction {
 }
 
 class ReplaceCardsAction {}
+
+class EndTurnAction {}

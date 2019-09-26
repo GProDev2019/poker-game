@@ -7,6 +7,7 @@ class PokerGameState {
   int currentPlayer;
   int numOfPlayers;
   HandOutStrategy handOutStrategy;
+  bool gameEnded;
   static const int maxNumOfPlayers = 9;
 
   PokerGameState(
@@ -17,7 +18,8 @@ class PokerGameState {
         players = List<PokerPlayer>.generate(
             numOfPlayers, (int index) => PokerPlayer(index),
             growable: false),
-        currentPlayer = 0;
+        currentPlayer = 0,
+        gameEnded = false;
 
   factory PokerGameState.initial() => PokerGameState();
 }

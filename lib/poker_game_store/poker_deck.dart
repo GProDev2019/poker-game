@@ -1,5 +1,4 @@
 import 'poker_card.dart';
-import 'poker_color.dart';
 
 class PokerDeck {
   List<PokerCard> cards;

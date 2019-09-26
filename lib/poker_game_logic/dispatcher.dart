@@ -4,7 +4,9 @@ import 'package:poker_game/poker_game_store/poker_hand.dart';
 import 'actions.dart';
 
 PokerGameState dispatchPokerGameAction(PokerGameState state, dynamic action) {
-  if (action is StartOfflineGameAction) {
+  if (action is ChangeNumberOfPlayersAction) {
+    return _changeNumberOfPlayers(state, action);
+  } else if (action is StartOfflineGameAction) {
     return _startOfflineGame(state);
   } else if (action is SelectCardAction) {
     return _selectCard(state, action);
@@ -12,7 +14,15 @@ PokerGameState dispatchPokerGameAction(PokerGameState state, dynamic action) {
     return _unselectCard(state, action);
   } else if (action is ReplaceCardsAction) {
     return _replaceCards(state);
+  } else if (action is EndTurnAction) {
+    return _endTurn(state);
   }
+  return state;
+}
+
+PokerGameState _changeNumberOfPlayers(
+    PokerGameState state, ChangeNumberOfPlayersAction action) {
+  state.numOfPlayers = action.numOfPlayers;
   return state;
 }
 
@@ -33,6 +43,7 @@ PokerGameState _handOutCardsToPlayers(PokerGameState state) {
   } else if (HandOutStrategy.oneByOneCard == state.handOutStrategy) {
     state = _oneByOneCardHandOutStrategy(state);
   }
+  state = _sortPlayersCards(state);
   return state;
 }
 
@@ -58,6 +69,14 @@ PokerGameState _oneByOneCardHandOutStrategy(PokerGameState state) {
 
 PokerGameState _handOutCardToPlayer(PokerGameState state, int playerIndex) {
   state.players[playerIndex].hand.cards.add(state.deck.cards.removeLast());
+  return state;
+}
+
+PokerGameState _sortPlayersCards(PokerGameState state) {
+  for (int playerIndex = 0; playerIndex < state.numOfPlayers; playerIndex++) {
+    state.players[playerIndex].hand.cards
+        .sort((PokerCard lCard, PokerCard rCard) => lCard.compareTo(rCard));
+  }
   return state;
 }
 
@@ -88,5 +107,22 @@ PokerGameState _replaceCards(PokerGameState state) {
   for (int cardNum = 0; cardNum < numOfCardsToReplace; cardNum++) {
     state = _handOutCardToPlayer(state, state.currentPlayer);
   }
+  return state;
+}
+
+PokerGameState _endTurn(PokerGameState state) {
+  if (++state.currentPlayer == state.numOfPlayers) {
+    state = _endGame(state);
+  }
+  return state;
+}
+
+PokerGameState _endGame(PokerGameState state) {
+  state = _compareHands(state);
+  state.gameEnded = true;
+  return state;
+}
+
+PokerGameState _compareHands(PokerGameState state) {
   return state;
 }
