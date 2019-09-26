@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:poker_game/poker_game_store/poker_game_state.dart';
-import 'package:poker_game/poker_game_logic/actions.dart';
 import 'package:redux/redux.dart';
 
-class MainMenuPage extends StatelessWidget {
+import 'package:poker_game/game_store/game_state.dart';
+import 'package:poker_game/game_logic/actions.dart';
+
+class StartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
-      StoreConnector<PokerGameState, _ViewModel>(
-          converter: (Store<PokerGameState> store) => _ViewModel.create(store),
+      StoreConnector<GameState, _ViewModel>(
+          converter: (Store<GameState> store) => _ViewModel.create(store),
           builder: (BuildContext context, _ViewModel viewModel) => Scaffold(
               appBar: AppBar(
                 title: Text(viewModel.pageTitle),
@@ -37,7 +38,7 @@ class _ViewModel {
 
   _ViewModel(this.pageTitle, this.isGameStarted, this.onPlayOffline);
 
-  factory _ViewModel.create(Store<PokerGameState> store) {
+  factory _ViewModel.create(Store<GameState> store) {
     return _ViewModel(
         'Main menu', false, () => store.dispatch(StartOfflineGameAction()));
   }

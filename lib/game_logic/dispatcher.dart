@@ -1,11 +1,11 @@
-import 'package:poker_game/poker_game_store/poker_game_state.dart';
-import 'package:poker_game/poker_game_store/poker_card.dart';
-import 'package:poker_game/poker_game_store/poker_hand.dart';
-import 'package:poker_game/poker_game_store/poker_player.dart';
+import 'package:poker_game/game_store/game_state.dart';
+import 'package:poker_game/game_store/playing_card.dart';
+import 'package:poker_game/game_store/hand.dart';
+import 'package:poker_game/game_store/player.dart';
 import 'actions.dart';
 import 'hand_names.dart';
 
-PokerGameState dispatchPokerGameAction(PokerGameState state, dynamic action) {
+GameState dispatchPokerGameAction(GameState state, dynamic action) {
   if (action is ChangeNumberOfPlayersAction) {
     return _changeNumberOfPlayers(state, action);
   } else if (action is StartOfflineGameAction) {
@@ -22,24 +22,24 @@ PokerGameState dispatchPokerGameAction(PokerGameState state, dynamic action) {
   return state;
 }
 
-PokerGameState _changeNumberOfPlayers(
-    PokerGameState state, ChangeNumberOfPlayersAction action) {
+GameState _changeNumberOfPlayers(
+    GameState state, ChangeNumberOfPlayersAction action) {
   state.numOfPlayers = action.numOfPlayers;
   return state;
 }
 
-PokerGameState _startOfflineGame(PokerGameState state) {
+GameState _startOfflineGame(GameState state) {
   state = _shuffleDeck(state);
   state = _handOutCardsToPlayers(state);
   return state;
 }
 
-PokerGameState _shuffleDeck(PokerGameState state) {
+GameState _shuffleDeck(GameState state) {
   state.deck.cards.shuffle();
   return state;
 }
 
-PokerGameState _handOutCardsToPlayers(PokerGameState state) {
+GameState _handOutCardsToPlayers(GameState state) {
   if (HandOutStrategy.allCardsAtOnce == state.handOutStrategy) {
     state = _allCardsAtOnceHandOutStrategy(state);
   } else if (HandOutStrategy.oneByOneCard == state.handOutStrategy) {
@@ -49,17 +49,17 @@ PokerGameState _handOutCardsToPlayers(PokerGameState state) {
   return state;
 }
 
-PokerGameState _allCardsAtOnceHandOutStrategy(PokerGameState state) {
+GameState _allCardsAtOnceHandOutStrategy(GameState state) {
   for (int playerIndex = 0; playerIndex < state.players.length; playerIndex++) {
-    for (int cardNum = 0; cardNum < PokerHand.maxNumOfCards; cardNum++) {
+    for (int cardNum = 0; cardNum < Hand.maxNumOfCards; cardNum++) {
       state = _handOutCardToPlayer(state, playerIndex);
     }
   }
   return state;
 }
 
-PokerGameState _oneByOneCardHandOutStrategy(PokerGameState state) {
-  for (int cardNum = 0; cardNum < PokerHand.maxNumOfCards; cardNum++) {
+GameState _oneByOneCardHandOutStrategy(GameState state) {
+  for (int cardNum = 0; cardNum < Hand.maxNumOfCards; cardNum++) {
     for (int playerIndex = 0;
         playerIndex < state.players.length;
         playerIndex++) {
@@ -69,48 +69,48 @@ PokerGameState _oneByOneCardHandOutStrategy(PokerGameState state) {
   return state;
 }
 
-PokerGameState _handOutCardToPlayer(PokerGameState state, int playerIndex) {
+GameState _handOutCardToPlayer(GameState state, int playerIndex) {
   state.players[playerIndex].hand.cards.add(state.deck.cards.removeLast());
   return state;
 }
 
-PokerGameState _sortPlayersCards(PokerGameState state) {
+GameState _sortPlayersCards(GameState state) {
   for (int playerIndex = 0; playerIndex < state.numOfPlayers; playerIndex++) {
     state = _sortPlayerCards(state, playerIndex);
   }
   return state;
 }
 
-PokerGameState _sortPlayerCards(PokerGameState state, int playerIndex) {
+GameState _sortPlayerCards(GameState state, int playerIndex) {
   state.players[playerIndex].hand.cards
-      .sort((PokerCard lCard, PokerCard rCard) => lCard.compareTo(rCard));
+      .sort((PlayingCard lCard, PlayingCard rCard) => lCard.compareTo(rCard));
   return state;
 }
 
-PokerGameState _selectCard(PokerGameState state, SelectCardAction action) {
+GameState _selectCard(GameState state, SelectCardAction action) {
   state.players[state.currentPlayer].hand.cards
-      .firstWhere((PokerCard card) =>
+      .firstWhere((PlayingCard card) =>
           card.color == action.selectedCard.color &&
           card.rank == action.selectedCard.rank)
       .selectedForReplace = true;
   return state;
 }
 
-PokerGameState _unselectCard(PokerGameState state, UnselectCardAction action) {
+GameState _unselectCard(GameState state, UnselectCardAction action) {
   state.players[state.currentPlayer].hand.cards
-      .firstWhere((PokerCard card) =>
+      .firstWhere((PlayingCard card) =>
           card.color == action.unselectedCard.color &&
           card.rank == action.unselectedCard.rank)
       .selectedForReplace = false;
   return state;
 }
 
-PokerGameState _replaceCards(PokerGameState state) {
+GameState _replaceCards(GameState state) {
   final int numOfCardsToReplace = state.players[state.currentPlayer].hand.cards
-      .where((PokerCard card) => card.selectedForReplace)
+      .where((PlayingCard card) => card.selectedForReplace)
       .length;
   state.players[state.currentPlayer].hand.cards
-      .removeWhere((PokerCard card) => card.selectedForReplace);
+      .removeWhere((PlayingCard card) => card.selectedForReplace);
   for (int cardNum = 0; cardNum < numOfCardsToReplace; cardNum++) {
     state = _handOutCardToPlayer(state, state.currentPlayer);
   }
@@ -118,22 +118,22 @@ PokerGameState _replaceCards(PokerGameState state) {
   return state;
 }
 
-PokerGameState _endTurn(PokerGameState state) {
+GameState _endTurn(GameState state) {
   if (++state.currentPlayer == state.numOfPlayers) {
     state = _endGame(state);
   }
   return state;
 }
 
-PokerGameState _endGame(PokerGameState state) {
+GameState _endGame(GameState state) {
   state = _compareHands(state);
   state.gameEnded = true;
   return state;
 }
 
-PokerGameState _compareHands(PokerGameState state) {
+GameState _compareHands(GameState state) {
   final List<HandStrength> playersHandStrength = <HandStrength>[];
-  for (PokerPlayer player in state.players) {
+  for (Player player in state.players) {
     playersHandStrength
         .add(gHandStrengthChecker.checkHandStrength(player.hand.cards));
   }

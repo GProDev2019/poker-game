@@ -1,27 +1,27 @@
-import 'poker_deck.dart';
-import 'poker_player.dart';
+import 'deck.dart';
+import 'player.dart';
 
-class PokerGameState {
-  PokerDeck deck;
-  List<PokerPlayer> players;
+class GameState {
+  Deck deck;
+  List<Player> players;
   int currentPlayer;
   int numOfPlayers;
   HandOutStrategy handOutStrategy;
   bool gameEnded;
   static const int maxNumOfPlayers = 9;
 
-  PokerGameState(
+  GameState(
       [this.numOfPlayers = 2,
       this.handOutStrategy = HandOutStrategy.oneByOneCard])
       : assert(numOfPlayers < maxNumOfPlayers),
-        deck = PokerDeck.initial(),
-        players = List<PokerPlayer>.generate(
-            numOfPlayers, (int index) => PokerPlayer(index),
+        deck = Deck.initial(),
+        players = List<Player>.generate(
+            numOfPlayers, (int index) => Player(index),
             growable: false),
         currentPlayer = 0,
         gameEnded = false;
 
-  factory PokerGameState.initial() => PokerGameState();
+  factory GameState.initial() => GameState();
 }
 
 enum HandOutStrategy { oneByOneCard, allCardsAtOnce }
