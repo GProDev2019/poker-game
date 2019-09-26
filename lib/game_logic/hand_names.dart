@@ -14,7 +14,7 @@ enum HandName {
 
 class HandStrength {
   HandName handName;
-  List<PokerRank> cardRanks;
+  List<CardRank> cardRanks;
   HandStrength(this.handName, this.cardRanks);
 
   // ToDo: Implement comparator
@@ -43,47 +43,47 @@ class HandStrengthChecker {
         return null;
       }
     }
-    return HandStrength(HandName.poker, <PokerRank>[_cards.last.rank]);
+    return HandStrength(HandName.poker, <CardRank>[_cards.last.rank]);
   }
 
   HandStrength _isFourOfAKind() {
     // ToDo
-    return HandStrength(HandName.fourOfAKind, <PokerRank>[]);
+    return HandStrength(HandName.fourOfAKind, <CardRank>[]);
   }
 
   HandStrength _isFullHouse() {
     // ToDo
-    return HandStrength(HandName.fullHouse, <PokerRank>[]);
+    return HandStrength(HandName.fullHouse, <CardRank>[]);
   }
 
   HandStrength _isFlush() {
     // ToDo
-    return HandStrength(HandName.flush, <PokerRank>[]);
+    return HandStrength(HandName.flush, <CardRank>[]);
   }
 
   HandStrength _isStraight() {
     // ToDo
-    return HandStrength(HandName.straight, <PokerRank>[]);
+    return HandStrength(HandName.straight, <CardRank>[]);
   }
 
   HandStrength _isThreeOfAKind() {
     // ToDo
-    return HandStrength(HandName.threeOfAKind, <PokerRank>[]);
+    return HandStrength(HandName.threeOfAKind, <CardRank>[]);
   }
 
   HandStrength _isTwoPairs() {
     // ToDo
-    return HandStrength(HandName.twoPairs, <PokerRank>[]);
+    return HandStrength(HandName.twoPairs, <CardRank>[]);
   }
 
   HandStrength _isPair() {
     // ToDo
-    return HandStrength(HandName.pair, <PokerRank>[]);
+    return HandStrength(HandName.pair, <CardRank>[]);
   }
 
   HandStrength _isHighCard() {
     // ToDo
-    return HandStrength(HandName.highCard, <PokerRank>[]);
+    return HandStrength(HandName.highCard, <CardRank>[]);
   }
 }
 
