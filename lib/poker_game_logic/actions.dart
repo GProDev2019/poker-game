@@ -7,8 +7,9 @@ class SelectCardAction {
   SelectCardAction(this.selectedCard);
 }
 
-class ReplaceCardsAction {
-  final int playerIndex;
-  final List<PokerCard> cardsToReplace;
-  ReplaceCardsAction(this.playerIndex, this.cardsToReplace);
+class UnselectCardAction {
+  final PokerCard unselectedCard;
+  UnselectCardAction(this.unselectedCard);
 }
+
+class ReplaceCardsAction {}

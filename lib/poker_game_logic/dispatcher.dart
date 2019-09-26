@@ -1,5 +1,6 @@
 import 'package:poker_game/poker_game_store/poker_game_state.dart';
-import '../poker_game_store/poker_hand.dart';
+import 'package:poker_game/poker_game_store/poker_card.dart';
+import 'package:poker_game/poker_game_store/poker_hand.dart';
 import 'actions.dart';
 
 PokerGameState dispatchPokerGameAction(PokerGameState state, dynamic action) {
@@ -7,8 +8,10 @@ PokerGameState dispatchPokerGameAction(PokerGameState state, dynamic action) {
     return _startOfflineGame(state);
   } else if (action is SelectCardAction) {
     return _selectCard(state, action);
+  } else if (action is UnselectCardAction) {
+    return _unselectCard(state, action);
   } else if (action is ReplaceCardsAction) {
-    return _replaceCards(state, action);
+    return _replaceCards(state);
   }
   return state;
 }
@@ -59,11 +62,31 @@ PokerGameState _handOutCardToPlayer(PokerGameState state, int playerIndex) {
 }
 
 PokerGameState _selectCard(PokerGameState state, SelectCardAction action) {
-  // ToDo
+  state.players[state.currentPlayer].hand.cards
+      .firstWhere((PokerCard card) =>
+          card.color == action.selectedCard.color &&
+          card.index == action.selectedCard.index)
+      .selectedForReplace = true;
   return state;
 }
 
-PokerGameState _replaceCards(PokerGameState state, ReplaceCardsAction action) {
-  // ToDo
+PokerGameState _unselectCard(PokerGameState state, UnselectCardAction action) {
+  state.players[state.currentPlayer].hand.cards
+      .firstWhere((PokerCard card) =>
+          card.color == action.unselectedCard.color &&
+          card.index == action.unselectedCard.index)
+      .selectedForReplace = false;
+  return state;
+}
+
+PokerGameState _replaceCards(PokerGameState state) {
+  final int numOfCardsToReplace = state.players[state.currentPlayer].hand.cards
+      .where((PokerCard card) => card.selectedForReplace)
+      .length;
+  state.players[state.currentPlayer].hand.cards
+      .removeWhere((PokerCard card) => card.selectedForReplace);
+  for (int cardNum = 0; cardNum < numOfCardsToReplace; cardNum++) {
+    state = _handOutCardToPlayer(state, state.currentPlayer);
+  }
   return state;
 }
