@@ -1,4 +1,4 @@
-import 'package:poker_game/poker_game_store/poker_card.dart';
+import 'package:poker_game/game_store/playing_card.dart';
 
 enum HandName {
   highCard,
@@ -21,8 +21,8 @@ class HandStrength {
 }
 
 class HandStrengthChecker {
-  List<PokerCard> _cards;
-  HandStrength checkHandStrength(List<PokerCard> cards) {
+  List<PlayingCard> _cards;
+  HandStrength checkHandStrength(List<PlayingCard> cards) {
     _cards = cards;
     return _isPoker() ??
         _isFourOfAKind() ??
