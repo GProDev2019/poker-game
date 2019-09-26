@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 import 'package:redux/redux.dart';
+
 import 'poker_game_store/poker_game_state.dart';
 
 class PokerGame extends StatelessWidget {
