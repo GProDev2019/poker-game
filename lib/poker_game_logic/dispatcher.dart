@@ -14,10 +14,12 @@ PokerGameState dispatchPokerGameAction(PokerGameState state, dynamic action) {
 
 PokerGameState _startOfflineGame(PokerGameState state) {
   state = _shuffleDeck(state);
+  // ToDo
   return state;
 }
 
 PokerGameState _shuffleDeck(PokerGameState state) {
+  state.deck.cards.shuffle();
   return state;
 }
 
