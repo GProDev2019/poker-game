@@ -7,16 +7,15 @@ import 'package:poker_game/game_logic/actions.dart';
 
 class StartPage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) =>
-      StoreConnector<GameState, _ViewModel>(
-          converter: (Store<GameState> store) => _ViewModel.create(store),
-          builder: (BuildContext context, _ViewModel viewModel) => Scaffold(
-              appBar: AppBar(
-                title: Text(viewModel.pageTitle),
-              ),
-              body: _createWidget(viewModel)));
+  Widget build(BuildContext context) => StoreConnector<GameState, _ViewModel>(
+      converter: (Store<GameState> store) => _ViewModel.create(store),
+      builder: (BuildContext context, _ViewModel viewModel) => Scaffold(
+          appBar: AppBar(
+            title: Text(viewModel.pageTitle),
+          ),
+          body: _createWidget(context, viewModel)));
 
-  Widget _createWidget(_ViewModel viewModel) {
+  Widget _createWidget(BuildContext context, _ViewModel viewModel) {
     if (!viewModel.isGameStarted) {
       return Center(
           child: FlatButton(
@@ -24,6 +23,7 @@ class StartPage extends StatelessWidget {
         child: const Text('PLAY OFFLINE'),
         onPressed: () {
           viewModel.onPlayOffline();
+          Navigator.pushNamed(context, '/offlineGame');
         },
       ));
     }

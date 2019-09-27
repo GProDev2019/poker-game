@@ -5,6 +5,7 @@ import 'package:redux/redux.dart';
 import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/screens/start.dart';
+import 'package:poker_game/screens/offline_game.dart';
 
 void main() {
   runApp(PokerGame());
@@ -12,8 +13,7 @@ void main() {
 
 class PokerGame extends StatelessWidget {
   final String title = 'Poker game';
-  final Store<GameState> store = Store<GameState>(
-      dispatchPokerGameAction,
+  final Store<GameState> store = Store<GameState>(dispatchPokerGameAction,
       initialState: GameState.initial());
 
   @override
@@ -21,6 +21,12 @@ class PokerGame extends StatelessWidget {
     return StoreProvider<GameState>(
         store: store,
         child: MaterialApp(
-            theme: ThemeData.light(), title: title, home: StartPage()));
+            initialRoute: '/',
+            routes: <String, WidgetBuilder>{
+              '/': (BuildContext context) => StartPage(),
+              '/offlineGame': (BuildContext context) => OfflineGamePage()
+            },
+            theme: ThemeData.light(),
+            title: title));
   }
 }
