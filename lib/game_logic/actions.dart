@@ -7,6 +7,11 @@ class ChangeNumberOfPlayersAction {
 
 class StartOfflineGameAction {}
 
+class ToggleSelectedCardAction {
+  final PlayingCard selectedCard;
+  ToggleSelectedCardAction(this.selectedCard);
+}
+
 class SelectCardAction {
   final PlayingCard selectedCard;
   SelectCardAction(this.selectedCard);

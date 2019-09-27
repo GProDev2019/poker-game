@@ -6,20 +6,24 @@ import 'actions.dart';
 import 'hand_names.dart';
 
 GameState dispatchPokerGameAction(GameState state, dynamic action) {
-  if (action is ChangeNumberOfPlayersAction) {
-    return _changeNumberOfPlayers(state, action);
-  } else if (action is StartOfflineGameAction) {
-    return _startOfflineGame(state);
-  } else if (action is SelectCardAction) {
-    return _selectCard(state, action);
-  } else if (action is UnselectCardAction) {
-    return _unselectCard(state, action);
-  } else if (action is ReplaceCardsAction) {
-    return _replaceCards(state);
-  } else if (action is EndTurnAction) {
-    return _endTurn(state);
+  switch (action.runtimeType) {
+    case ChangeNumberOfPlayersAction:
+      return _changeNumberOfPlayers(state, action);
+    case StartOfflineGameAction:
+      return _startOfflineGame(state);
+    case ToggleSelectedCardAction:
+      return _toggleCard(state, action);
+    case SelectCardAction:
+      return _selectCard(state, action);
+    case UnselectCardAction:
+      return _unselectCard(state, action);
+    case ReplaceCardsAction:
+      return _replaceCards(state);
+    case EndTurnAction:
+      return _endTurn(state);
+    default:
+      return state; // TODO(igor): throw exception as state here should have changed
   }
-  return state;
 }
 
 GameState _changeNumberOfPlayers(
@@ -84,6 +88,15 @@ GameState _sortPlayersCards(GameState state) {
 GameState _sortPlayerCards(GameState state, int playerIndex) {
   state.players[playerIndex].hand.cards
       .sort((PlayingCard lCard, PlayingCard rCard) => lCard.compareTo(rCard));
+  return state;
+}
+
+GameState _toggleCard(GameState state, ToggleSelectedCardAction action) {
+  state.players[state.currentPlayer].hand.cards
+    .firstWhere((PlayingCard card) =>
+      card.color == action.selectedCard.color &&
+      card.rank == action.selectedCard.rank)
+    .selectedForReplace = !action.selectedCard.selectedForReplace;
   return state;
 }
 
