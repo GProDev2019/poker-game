@@ -8,8 +8,8 @@ class Deck {
 
   factory Deck.initial() {
     final List<PlayingCard> cards = <PlayingCard>[];
-    for (PokerColor color in PokerColor.values) {
-      for (PokerRank rank in PokerRank.values) {
+    for (CardColor color in CardColor.values) {
+      for (CardRank rank in CardRank.values) {
         cards.add(PlayingCard(rank, color));
       }
     }
