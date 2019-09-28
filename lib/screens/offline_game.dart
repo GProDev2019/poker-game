@@ -22,7 +22,8 @@ class OfflineGamePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           _createCards(viewModel),
-          _createReplaceCardsButton(viewModel)
+          _createReplaceCardsButton(viewModel),
+          _createEndTurnButton(viewModel)
         ],
       ),
     );
@@ -33,14 +34,18 @@ class OfflineGamePage extends StatelessWidget {
       child: Row(
         children: List<Expanded>.generate(Hand.maxNumOfCards, (int i) {
           final PlayingCard card = viewModel.playerCards.cards[i];
+          final String cardRank = card.rank.toString().split('.').last;
           return Expanded(
               child: FlatButton(
-            color: viewModel.getCardColor(i),
-            child: Text(
-                card.selectedForReplace.toString(),
-                style: TextStyle(color: Colors.white)),
-            onPressed: () => viewModel.onToggleSelectedCard(card)
-          ));
+                  color: viewModel.getCardColor(i),
+                  child: Column(
+                    children: <Widget>[
+                      Text(card.selectedForReplace.toString(),
+                      style: TextStyle(color: Colors.white)),
+                      Text(cardRank, style: TextStyle(color: Colors.white))
+                    ],
+                  ),
+                  onPressed: () => viewModel.onToggleSelectedCard(card)));
         }),
       ),
     );
@@ -48,31 +53,47 @@ class OfflineGamePage extends StatelessWidget {
 
   Widget _createReplaceCardsButton(_ViewModel viewModel) {
     return Container(
-        padding: const EdgeInsets.only(bottom: 30.0),
         child: FlatButton(
           child: const Text('Replace Cards'),
-          onPressed: () => viewModel.onReplaceCards(),
+          color: Colors.blue,
+          disabledColor: Colors.grey,
+          onPressed: viewModel.onReplaceCards,
         ));
+  }
+
+  Widget _createEndTurnButton(_ViewModel viewModel) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 30.0),
+      child: FlatButton(
+        child: const Text('End Turn'),
+        color: Colors.blue,
+        onPressed: viewModel.onEndTurn,
+      )
+    );
   }
 }
 
 class _ViewModel {
   final int currentPlayer;
   final Function() onReplaceCards;
+  final Function() onEndTurn;
   final Function(PlayingCard card) onToggleSelectedCard;
   final Hand playerCards;
   final String pageTitle;
 
-  _ViewModel(this.currentPlayer, this.onReplaceCards,
-      this.onToggleSelectedCard, this.playerCards)
+  _ViewModel(this.currentPlayer, this.onReplaceCards, this.onEndTurn, this.onToggleSelectedCard,
+      this.playerCards)
       : pageTitle = 'Player $currentPlayer';
 
   factory _ViewModel.create(Store<GameState> store) {
+    final int currentPlayer = store.state.currentPlayer;
+    final bool replacedCards = store.state.players[currentPlayer].replacedCards;
     return _ViewModel(
-        store.state.currentPlayer,
-        () => store.dispatch(ReplaceCardsAction()),
+        currentPlayer,
+        replacedCards ? null : () => store.dispatch(ReplaceCardsAction()),
+        () => store.dispatch(EndTurnAction()),
         (PlayingCard card) => store.dispatch(ToggleSelectedCardAction(card)),
-        store.state.players[store.state.currentPlayer].hand);
+        store.state.players[currentPlayer].hand);
   }
 
   Color getCardColor(int index) {

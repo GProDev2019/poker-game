@@ -12,16 +12,6 @@ class ToggleSelectedCardAction {
   ToggleSelectedCardAction(this.selectedCard);
 }
 
-class SelectCardAction {
-  final PlayingCard selectedCard;
-  SelectCardAction(this.selectedCard);
-}
-
-class UnselectCardAction {
-  final PlayingCard unselectedCard;
-  UnselectCardAction(this.unselectedCard);
-}
-
 class ReplaceCardsAction {}
 
 class EndTurnAction {}
