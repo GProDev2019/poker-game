@@ -47,7 +47,8 @@ class StartPage extends StatelessWidget {
                     autovalidate: true,
                     validator: (String numOfPlayersText) {
                       final int numOfPlayers = int.parse(numOfPlayersText);
-                      if (numOfPlayers < 2 || 5 < numOfPlayers) {
+                      if (numOfPlayers < GameState.minNumOfPlayers ||
+                          GameState.maxNumOfPlayers < numOfPlayers) {
                         viewModel.canBeStarted = false;
                         return 'Number of players should be between 2 and 5!';
                       }

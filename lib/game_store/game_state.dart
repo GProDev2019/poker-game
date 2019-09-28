@@ -8,7 +8,8 @@ class GameState {
   int numOfPlayers;
   HandOutStrategy handOutStrategy;
   bool gameEnded;
-  static const int maxNumOfPlayers = 9;
+  static const int minNumOfPlayers = 2;
+  static const int maxNumOfPlayers = 5;
 
   GameState(
       [this.numOfPlayers = 2,
