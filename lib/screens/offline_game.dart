@@ -32,13 +32,14 @@ class OfflineGamePage extends StatelessWidget {
     return Container(
       child: Row(
         children: List<Expanded>.generate(Hand.maxNumOfCards, (int i) {
+          final PlayingCard card = viewModel.playerCards.cards[i];
           return Expanded(
               child: FlatButton(
             color: viewModel.getCardColor(i),
-            child: const Text('card'),
-            onPressed: () {
-              print('Card $i pressed...');
-            },
+            child: Text(
+                card.selectedForReplace.toString(),
+                style: TextStyle(color: Colors.white)),
+            onPressed: () => viewModel.onToggleSelectedCard(card)
           ));
         }),
       ),
@@ -50,24 +51,27 @@ class OfflineGamePage extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 30.0),
         child: FlatButton(
           child: const Text('Replace Cards'),
-          onPressed: () => viewModel.replaceCards,
+          onPressed: () => viewModel.onReplaceCards(),
         ));
   }
 }
 
 class _ViewModel {
   final int currentPlayer;
-  final Function() replaceCards;
+  final Function() onReplaceCards;
+  final Function(PlayingCard card) onToggleSelectedCard;
   final Hand playerCards;
   final String pageTitle;
 
-  _ViewModel(this.currentPlayer, this.replaceCards, this.playerCards)
+  _ViewModel(this.currentPlayer, this.onReplaceCards,
+      this.onToggleSelectedCard, this.playerCards)
       : pageTitle = 'Player $currentPlayer';
 
   factory _ViewModel.create(Store<GameState> store) {
     return _ViewModel(
         store.state.currentPlayer,
-        () => store.dispatch(ReplaceCardsAction),
+        () => store.dispatch(ReplaceCardsAction()),
+        (PlayingCard card) => store.dispatch(ToggleSelectedCardAction(card)),
         store.state.players[store.state.currentPlayer].hand);
   }
 
