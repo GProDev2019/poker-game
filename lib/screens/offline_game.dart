@@ -10,6 +10,9 @@ import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/routes.dart';
 
 class OfflineGamePage extends StatelessWidget {
+  static const Key replaceCardsButtonKey = Key('REPLACE_CARDS_BUTTON_KEY');
+  static const Key cardsKey = Key('CARDS_KEY_');
+  static const Key endTurnButtonKey = Key('END_TURN_BUTTON_KEY');
   @override
   Widget build(BuildContext context) => StoreConnector<GameState, _ViewModel>(
       converter: (Store<GameState> store) => _ViewModel.create(store),
@@ -41,6 +44,7 @@ class OfflineGamePage extends StatelessWidget {
           final String cardRank = card.rank.toString().split('.').last;
           return Expanded(
               child: FlatButton(
+                  key: Key(cardsKey.toString() + i.toString()),
                   color: viewModel.getCardColor(i),
                   child: Column(
                     children: <Widget>[
@@ -58,6 +62,7 @@ class OfflineGamePage extends StatelessWidget {
   Widget _createReplaceCardsButton(_ViewModel viewModel) {
     return Container(
         child: FlatButton(
+      key: replaceCardsButtonKey,
       child: const Text('Replace Cards'),
       color: Colors.blue,
       disabledColor: Colors.grey,
@@ -69,6 +74,7 @@ class OfflineGamePage extends StatelessWidget {
     return Container(
         padding: const EdgeInsets.only(bottom: 30.0),
         child: FlatButton(
+          key: endTurnButtonKey,
           child: const Text('End Turn'),
           color: Colors.blue,
           onPressed: viewModel.onEndTurn,
