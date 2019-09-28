@@ -167,6 +167,3 @@ class HandStrengthChecker {
     return HandStrength(HandName.highCard, _getCardRankList());
   }
 }
-
-HandStrengthChecker gHandStrengthChecker =
-    HandStrengthChecker(); // ToDo: Maybe not global?

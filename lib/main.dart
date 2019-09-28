@@ -13,7 +13,9 @@ void main() {
 
 class PokerGame extends StatelessWidget {
   final String title = 'Poker game';
-  final Store<GameState> store = Store<GameState>(dispatchPokerGameAction,
+  static final Dispatcher dispatcher = Dispatcher();
+  final Store<GameState> store = Store<GameState>(
+      dispatcher.dispatchPokerGameAction,
       initialState: GameState.initial());
 
   @override
