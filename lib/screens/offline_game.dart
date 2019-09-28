@@ -33,14 +33,18 @@ class OfflineGamePage extends StatelessWidget {
       child: Row(
         children: List<Expanded>.generate(Hand.maxNumOfCards, (int i) {
           final PlayingCard card = viewModel.playerCards.cards[i];
+          final String cardRank = card.rank.toString().split('.').last;
           return Expanded(
               child: FlatButton(
-            color: viewModel.getCardColor(i),
-            child: Text(
-                card.selectedForReplace.toString(),
-                style: TextStyle(color: Colors.white)),
-            onPressed: () => viewModel.onToggleSelectedCard(card)
-          ));
+                  color: viewModel.getCardColor(i),
+                  child: Column(
+                    children: <Widget>[
+                      Text(card.selectedForReplace.toString(),
+                      style: TextStyle(color: Colors.white)),
+                      Text(cardRank, style: TextStyle(color: Colors.white))
+                    ],
+                  ),
+                  onPressed: () => viewModel.onToggleSelectedCard(card)));
         }),
       ),
     );
@@ -63,8 +67,8 @@ class _ViewModel {
   final Hand playerCards;
   final String pageTitle;
 
-  _ViewModel(this.currentPlayer, this.onReplaceCards,
-      this.onToggleSelectedCard, this.playerCards)
+  _ViewModel(this.currentPlayer, this.onReplaceCards, this.onToggleSelectedCard,
+      this.playerCards)
       : pageTitle = 'Player $currentPlayer';
 
   factory _ViewModel.create(Store<GameState> store) {
