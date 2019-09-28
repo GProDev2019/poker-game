@@ -120,8 +120,10 @@ class Dispatcher {
   }
 
   GameState _endTurn(GameState state) {
-    if (++state.currentPlayer == state.numOfPlayers) {
+    if (state.currentPlayer == state.numOfPlayers - 1) {
       state = _endGame(state);
+    } else {
+      state.currentPlayer += 1;
     }
     return state;
   }

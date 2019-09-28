@@ -12,12 +12,15 @@ enum HandName {
   poker
 }
 
-class HandStrength {
+class HandStrength implements Comparable<HandStrength> {
   HandName handName;
   List<CardRank> cardRanks;
   HandStrength(this.handName, this.cardRanks);
 
-  // ToDo: Implement comparator
+  @override
+  int compareTo(HandStrength otherHandStrength) {
+    return 1; // ToDo: Implement comparator
+  }
 }
 
 class HandStrengthChecker {
