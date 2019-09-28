@@ -22,7 +22,8 @@ class OfflineGamePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           _createCards(viewModel),
-          _createReplaceCardsButton(viewModel)
+          _createReplaceCardsButton(viewModel),
+          _createEndTurnButton(viewModel)
         ],
       ),
     );
@@ -52,31 +53,47 @@ class OfflineGamePage extends StatelessWidget {
 
   Widget _createReplaceCardsButton(_ViewModel viewModel) {
     return Container(
-        padding: const EdgeInsets.only(bottom: 30.0),
         child: FlatButton(
           child: const Text('Replace Cards'),
-          onPressed: () => viewModel.onReplaceCards(),
+          color: Colors.blue,
+          disabledColor: Colors.grey,
+          onPressed: viewModel.onReplaceCards,
         ));
+  }
+
+  Widget _createEndTurnButton(_ViewModel viewModel) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 30.0),
+      child: FlatButton(
+        child: const Text('End Turn'),
+        color: Colors.blue,
+        onPressed: viewModel.onEndTurn,
+      )
+    );
   }
 }
 
 class _ViewModel {
   final int currentPlayer;
   final Function() onReplaceCards;
+  final Function() onEndTurn;
   final Function(PlayingCard card) onToggleSelectedCard;
   final Hand playerCards;
   final String pageTitle;
 
-  _ViewModel(this.currentPlayer, this.onReplaceCards, this.onToggleSelectedCard,
+  _ViewModel(this.currentPlayer, this.onReplaceCards, this.onEndTurn, this.onToggleSelectedCard,
       this.playerCards)
       : pageTitle = 'Player $currentPlayer';
 
   factory _ViewModel.create(Store<GameState> store) {
+    final int currentPlayer = store.state.currentPlayer;
+    final bool replacedCards = store.state.players[currentPlayer].replacedCards;
     return _ViewModel(
-        store.state.currentPlayer,
-        () => store.dispatch(ReplaceCardsAction()),
+        currentPlayer,
+        replacedCards ? null : () => store.dispatch(ReplaceCardsAction()),
+        () => store.dispatch(EndTurnAction()),
         (PlayingCard card) => store.dispatch(ToggleSelectedCardAction(card)),
-        store.state.players[store.state.currentPlayer].hand);
+        store.state.players[currentPlayer].hand);
   }
 
   Color getCardColor(int index) {

@@ -13,16 +13,12 @@ GameState dispatchPokerGameAction(GameState state, dynamic action) {
       return _startOfflineGame(state);
     case ToggleSelectedCardAction:
       return _toggleCard(state, action);
-    case SelectCardAction:
-      return _selectCard(state, action);
-    case UnselectCardAction:
-      return _unselectCard(state, action);
     case ReplaceCardsAction:
       return _replaceCards(state);
     case EndTurnAction:
       return _endTurn(state);
     default:
-      return state; // TODO(igor): throw exception as state here should have changed
+      throw "Unhandled action or state didn't change (Reducer shouldn't return the same state), action: ${action.toString()}";
   }
 }
 
@@ -93,28 +89,10 @@ GameState _sortPlayerCards(GameState state, int playerIndex) {
 
 GameState _toggleCard(GameState state, ToggleSelectedCardAction action) {
   state.players[state.currentPlayer].hand.cards
-    .firstWhere((PlayingCard card) =>
-      card.color == action.selectedCard.color &&
-      card.rank == action.selectedCard.rank)
-    .selectedForReplace = !action.selectedCard.selectedForReplace;
-  return state;
-}
-
-GameState _selectCard(GameState state, SelectCardAction action) {
-  state.players[state.currentPlayer].hand.cards
       .firstWhere((PlayingCard card) =>
           card.color == action.selectedCard.color &&
           card.rank == action.selectedCard.rank)
-      .selectedForReplace = true;
-  return state;
-}
-
-GameState _unselectCard(GameState state, UnselectCardAction action) {
-  state.players[state.currentPlayer].hand.cards
-      .firstWhere((PlayingCard card) =>
-          card.color == action.unselectedCard.color &&
-          card.rank == action.unselectedCard.rank)
-      .selectedForReplace = false;
+      .selectedForReplace = !action.selectedCard.selectedForReplace;
   return state;
 }
 
@@ -128,6 +106,7 @@ GameState _replaceCards(GameState state) {
     state = _handOutCardToPlayer(state, state.currentPlayer);
   }
   _sortPlayerCards(state, state.currentPlayer);
+  state.players[state.currentPlayer].replacedCards = true;
   return state;
 }
 
