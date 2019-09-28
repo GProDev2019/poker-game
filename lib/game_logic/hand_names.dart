@@ -35,55 +35,136 @@ class HandStrengthChecker {
         _isHighCard();
   }
 
+  List<CardRank> _getCardRankList() {
+    return List<CardRank>.generate(
+        _cards.length, (int index) => _cards[index].rank);
+  }
+
   HandStrength _isPoker() {
-    for (int cardNum = 0; cardNum < _cards.length; cardNum++) {
+    // Check for whell
+    if (_cards[0].rank == CardRank.ace &&
+        _cards[1].rank == CardRank.two &&
+        _cards[2].rank == CardRank.three &&
+        _cards[3].rank == CardRank.four &&
+        _cards[4].rank == CardRank.five) {
+      for (int cardNum = 0; cardNum < _cards.length - 1; cardNum++) {
+        if ((_cards[cardNum].color.index) != _cards[cardNum + 1].color.index) {
+          return null;
+        }
+      }
+      return HandStrength(HandName.poker, _getCardRankList());
+    }
+    // Check rest
+    for (int cardNum = 0; cardNum < _cards.length - 1; cardNum++) {
       if (((_cards[cardNum].rank.index + 1) !=
               _cards[cardNum + 1].rank.index) ||
           ((_cards[cardNum].color.index) != _cards[cardNum + 1].color.index)) {
         return null;
       }
     }
-    return HandStrength(HandName.poker, <CardRank>[_cards.last.rank]);
+    return HandStrength(HandName.poker, _getCardRankList());
   }
 
   HandStrength _isFourOfAKind() {
-    // ToDo
-    return HandStrength(HandName.fourOfAKind, <CardRank>[]);
+    if (_cards
+        .sublist(0, 4)
+        .every((PlayingCard card) => card.rank.index == _cards[0].rank.index)) {
+      return HandStrength(HandName.fourOfAKind, <CardRank>[_cards[0].rank]);
+    } else if (_cards
+        .sublist(1, 5)
+        .every((PlayingCard card) => card.rank.index == _cards[1].rank.index)) {
+      return HandStrength(HandName.fourOfAKind, <CardRank>[_cards[1].rank]);
+    }
+    return null;
   }
 
   HandStrength _isFullHouse() {
-    // ToDo
-    return HandStrength(HandName.fullHouse, <CardRank>[]);
+    if (_cards.sublist(0, 3).every(
+            (PlayingCard card) => card.rank.index == _cards[0].rank.index) &&
+        _cards.sublist(3, 5).every(
+            (PlayingCard card) => card.rank.index == _cards[3].rank.index)) {
+      return HandStrength(
+          HandName.fullHouse, <CardRank>[_cards[0].rank, _cards[3].rank]);
+    } else if (_cards.sublist(0, 2).every(
+            (PlayingCard card) => card.rank.index == _cards[0].rank.index) &&
+        _cards.sublist(2, 5).every(
+            (PlayingCard card) => card.rank.index == _cards[2].rank.index)) {
+      return HandStrength(
+          HandName.fullHouse, <CardRank>[_cards[0].rank, _cards[2].rank]);
+    }
+    return null;
   }
 
   HandStrength _isFlush() {
-    // ToDo
-    return HandStrength(HandName.flush, <CardRank>[]);
+    if (_cards.every(
+        (PlayingCard card) => card.color.index == _cards[0].color.index)) {
+      return HandStrength(HandName.flush, _getCardRankList());
+    }
+    return null;
   }
 
   HandStrength _isStraight() {
-    // ToDo
-    return HandStrength(HandName.straight, <CardRank>[]);
+    // Check for whell
+    if (_cards[0].rank == CardRank.ace &&
+        _cards[1].rank == CardRank.two &&
+        _cards[2].rank == CardRank.three &&
+        _cards[3].rank == CardRank.four &&
+        _cards[4].rank == CardRank.five) {
+      return HandStrength(HandName.straight, _getCardRankList());
+    }
+    // Check rest
+    for (int cardNum = 0; cardNum < _cards.length - 1; cardNum++) {
+      if (_cards[cardNum].rank.index + 1 != _cards[cardNum + 1].rank.index) {
+        return null;
+      }
+    }
+    return HandStrength(HandName.straight, _getCardRankList());
   }
 
   HandStrength _isThreeOfAKind() {
-    // ToDo
-    return HandStrength(HandName.threeOfAKind, <CardRank>[]);
+    if (_cards
+        .sublist(0, 3)
+        .every((PlayingCard card) => card.rank.index == _cards[0].rank.index)) {
+      return HandStrength(HandName.threeOfAKind, <CardRank>[_cards[0].rank]);
+    } else if (_cards
+        .sublist(1, 4)
+        .every((PlayingCard card) => card.rank.index == _cards[1].rank.index)) {
+      return HandStrength(HandName.threeOfAKind, <CardRank>[_cards[1].rank]);
+    } else if (_cards
+        .sublist(2, 5)
+        .every((PlayingCard card) => card.rank.index == _cards[2].rank.index)) {
+      return HandStrength(HandName.threeOfAKind, <CardRank>[_cards[2].rank]);
+    }
+    return null;
   }
 
   HandStrength _isTwoPairs() {
-    // ToDo
-    return HandStrength(HandName.twoPairs, <CardRank>[]);
+    int pairs = 0;
+    for (int cardNum = 0; cardNum < _cards.length - 1; cardNum++) {
+      if (_cards.sublist(cardNum, cardNum + 2).every((PlayingCard card) =>
+          card.rank.index == _cards[cardNum].rank.index)) {
+        pairs++;
+        cardNum++;
+      }
+    }
+    if (pairs == 2) {
+      return HandStrength(HandName.twoPairs, _getCardRankList());
+    }
+    return null;
   }
 
   HandStrength _isPair() {
-    // ToDo
-    return HandStrength(HandName.pair, <CardRank>[]);
+    for (int cardNum = 0; cardNum < _cards.length - 1; cardNum++) {
+      if (_cards.sublist(cardNum, cardNum + 2).every((PlayingCard card) =>
+          card.rank.index == _cards[cardNum].rank.index)) {
+        return HandStrength(HandName.pair, _getCardRankList());
+      }
+    }
+    return null;
   }
 
   HandStrength _isHighCard() {
-    // ToDo
-    return HandStrength(HandName.highCard, <CardRank>[]);
+    return HandStrength(HandName.highCard, _getCardRankList());
   }
 }
 
