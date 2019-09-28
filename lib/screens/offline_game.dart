@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -11,10 +12,17 @@ class OfflineGamePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => StoreConnector<GameState, _ViewModel>(
       converter: (Store<GameState> store) => _ViewModel.create(store),
-      builder: (BuildContext context, _ViewModel viewModel) => Scaffold(
-            appBar: AppBar(title: Text(viewModel.pageTitle)),
-            body: _createWidget(context, viewModel),
-          ));
+      builder: (BuildContext context, _ViewModel viewModel) {
+        if (viewModel.gameEnded) {
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            Navigator.pop(context);
+          });
+        }
+        return Scaffold(
+          appBar: AppBar(title: Text(viewModel.pageTitle)),
+          body: _createWidget(context, viewModel),
+        );
+      });
 
   Widget _createWidget(BuildContext context, _ViewModel viewModel) {
     return Container(
@@ -41,7 +49,7 @@ class OfflineGamePage extends StatelessWidget {
                   child: Column(
                     children: <Widget>[
                       Text(card.selectedForReplace.toString(),
-                      style: TextStyle(color: Colors.white)),
+                          style: TextStyle(color: Colors.white)),
                       Text(cardRank, style: TextStyle(color: Colors.white))
                     ],
                   ),
@@ -54,35 +62,35 @@ class OfflineGamePage extends StatelessWidget {
   Widget _createReplaceCardsButton(_ViewModel viewModel) {
     return Container(
         child: FlatButton(
-          child: const Text('Replace Cards'),
-          color: Colors.blue,
-          disabledColor: Colors.grey,
-          onPressed: viewModel.onReplaceCards,
-        ));
+      child: const Text('Replace Cards'),
+      color: Colors.blue,
+      disabledColor: Colors.grey,
+      onPressed: viewModel.onReplaceCards,
+    ));
   }
 
   Widget _createEndTurnButton(_ViewModel viewModel) {
     return Container(
-      padding: const EdgeInsets.only(bottom: 30.0),
-      child: FlatButton(
-        child: const Text('End Turn'),
-        color: Colors.blue,
-        onPressed: viewModel.onEndTurn,
-      )
-    );
+        padding: const EdgeInsets.only(bottom: 30.0),
+        child: FlatButton(
+          child: const Text('End Turn'),
+          color: Colors.blue,
+          onPressed: viewModel.onEndTurn,
+        ));
   }
 }
 
 class _ViewModel {
   final int currentPlayer;
+  final bool gameEnded;
   final Function() onReplaceCards;
   final Function() onEndTurn;
   final Function(PlayingCard card) onToggleSelectedCard;
   final Hand playerCards;
   final String pageTitle;
 
-  _ViewModel(this.currentPlayer, this.onReplaceCards, this.onEndTurn, this.onToggleSelectedCard,
-      this.playerCards)
+  _ViewModel(this.currentPlayer, this.gameEnded, this.onReplaceCards,
+      this.onEndTurn, this.onToggleSelectedCard, this.playerCards)
       : pageTitle = 'Player $currentPlayer';
 
   factory _ViewModel.create(Store<GameState> store) {
@@ -90,6 +98,7 @@ class _ViewModel {
     final bool replacedCards = store.state.players[currentPlayer].replacedCards;
     return _ViewModel(
         currentPlayer,
+        store.state.gameEnded,
         replacedCards ? null : () => store.dispatch(ReplaceCardsAction()),
         () => store.dispatch(EndTurnAction()),
         (PlayingCard card) => store.dispatch(ToggleSelectedCardAction(card)),
