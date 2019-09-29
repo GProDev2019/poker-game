@@ -13,6 +13,10 @@ class HandStrengthTester {
 
   void testComparison(List<PlayingCard> cardsFirstPlayer,
       List<PlayingCard> cardsSecondPlayer, int expectedWinningPlayer) {
+    cardsFirstPlayer
+        .sort((PlayingCard lCard, PlayingCard rCard) => lCard.compareTo(rCard));
+    cardsSecondPlayer
+        .sort((PlayingCard lCard, PlayingCard rCard) => lCard.compareTo(rCard));
     final HandStrength handStrengthFirstPlayer =
         handStrengthChecker.checkHandStrength(cardsFirstPlayer);
     final HandStrength handStrengthSecondPlayer =
@@ -25,6 +29,24 @@ class HandStrengthTester {
 void main() {
   final HandStrengthTester handStrengthTester = HandStrengthTester();
   group('Hand strength comparison', () {
+    test('highHand vs highHand', () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.two, CardColor.diamonds),
+        PlayingCard(CardRank.three, CardColor.hearts),
+        PlayingCard(CardRank.seven, CardColor.clubs),
+        PlayingCard(CardRank.eight, CardColor.clubs),
+        PlayingCard(CardRank.ace, CardColor.spades)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.two, CardColor.diamonds),
+        PlayingCard(CardRank.four, CardColor.hearts),
+        PlayingCard(CardRank.six, CardColor.clubs),
+        PlayingCard(CardRank.eight, CardColor.clubs),
+        PlayingCard(CardRank.nine, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(
+          cardsFirstPlayer, cardsSecondPlayer, -1);
+    });
     test('pair vs twoPairs', () {
       final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
         PlayingCard(CardRank.two, CardColor.diamonds),
@@ -42,7 +64,7 @@ void main() {
       ];
       handStrengthTester.testComparison(cardsFirstPlayer, cardsSecondPlayer, 1);
     });
-    test('pair vs pair, first player has better rest of cards', () {
+    test('pair vs pair, first player has stronger pair', () {
       final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
         PlayingCard(CardRank.two, CardColor.diamonds),
         PlayingCard(CardRank.three, CardColor.hearts),
@@ -56,6 +78,170 @@ void main() {
         PlayingCard(CardRank.seven, CardColor.clubs),
         PlayingCard(CardRank.eight, CardColor.clubs),
         PlayingCard(CardRank.jack, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(
+          cardsFirstPlayer, cardsSecondPlayer, -1);
+    });
+    test('pair vs pair, the same pairs, first player has stronger kicker', () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.nine, CardColor.diamonds),
+        PlayingCard(CardRank.three, CardColor.hearts),
+        PlayingCard(CardRank.seven, CardColor.clubs),
+        PlayingCard(CardRank.jack, CardColor.hearts),
+        PlayingCard(CardRank.jack, CardColor.diamonds)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.two, CardColor.diamonds),
+        PlayingCard(CardRank.three, CardColor.hearts),
+        PlayingCard(CardRank.seven, CardColor.clubs),
+        PlayingCard(CardRank.jack, CardColor.clubs),
+        PlayingCard(CardRank.jack, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(
+          cardsFirstPlayer, cardsSecondPlayer, -1);
+    });
+    test('threeOfAKind vs threeOfAKind, first player has stronger threeOfAKind',
+        () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.six, CardColor.diamonds),
+        PlayingCard(CardRank.three, CardColor.hearts),
+        PlayingCard(CardRank.jack, CardColor.clubs),
+        PlayingCard(CardRank.jack, CardColor.hearts),
+        PlayingCard(CardRank.jack, CardColor.diamonds)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.two, CardColor.diamonds),
+        PlayingCard(CardRank.four, CardColor.hearts),
+        PlayingCard(CardRank.nine, CardColor.clubs),
+        PlayingCard(CardRank.nine, CardColor.clubs),
+        PlayingCard(CardRank.nine, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(
+          cardsFirstPlayer, cardsSecondPlayer, -1);
+    });
+    test('twoPairs vs twoPairs, first player has stronger twoPairs', () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.six, CardColor.diamonds),
+        PlayingCard(CardRank.king, CardColor.hearts),
+        PlayingCard(CardRank.king, CardColor.clubs),
+        PlayingCard(CardRank.two, CardColor.hearts),
+        PlayingCard(CardRank.two, CardColor.diamonds)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.queen, CardColor.diamonds),
+        PlayingCard(CardRank.queen, CardColor.hearts),
+        PlayingCard(CardRank.nine, CardColor.clubs),
+        PlayingCard(CardRank.three, CardColor.clubs),
+        PlayingCard(CardRank.three, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(
+          cardsFirstPlayer, cardsSecondPlayer, -1);
+    });
+    test('twoPairs vs twoPairs, second player has stronger twoPairs', () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.six, CardColor.diamonds),
+        PlayingCard(CardRank.six, CardColor.hearts),
+        PlayingCard(CardRank.king, CardColor.clubs),
+        PlayingCard(CardRank.two, CardColor.hearts),
+        PlayingCard(CardRank.two, CardColor.diamonds)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.queen, CardColor.diamonds),
+        PlayingCard(CardRank.nine, CardColor.hearts),
+        PlayingCard(CardRank.nine, CardColor.clubs),
+        PlayingCard(CardRank.three, CardColor.clubs),
+        PlayingCard(CardRank.three, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(cardsFirstPlayer, cardsSecondPlayer, 1);
+    });
+    test('twoPairs vs twoPairs, second player has stronger last card', () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.six, CardColor.diamonds),
+        PlayingCard(CardRank.six, CardColor.hearts),
+        PlayingCard(CardRank.three, CardColor.clubs),
+        PlayingCard(CardRank.two, CardColor.hearts),
+        PlayingCard(CardRank.two, CardColor.diamonds)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.queen, CardColor.diamonds),
+        PlayingCard(CardRank.two, CardColor.hearts),
+        PlayingCard(CardRank.two, CardColor.clubs),
+        PlayingCard(CardRank.six, CardColor.clubs),
+        PlayingCard(CardRank.six, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(cardsFirstPlayer, cardsSecondPlayer, 1);
+    });
+    test('threeOfAKind vs threeOfAKind, first player has stronger threeOfAKind',
+        () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.six, CardColor.diamonds),
+        PlayingCard(CardRank.six, CardColor.hearts),
+        PlayingCard(CardRank.six, CardColor.clubs),
+        PlayingCard(CardRank.two, CardColor.hearts),
+        PlayingCard(CardRank.king, CardColor.diamonds)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.queen, CardColor.diamonds),
+        PlayingCard(CardRank.two, CardColor.hearts),
+        PlayingCard(CardRank.two, CardColor.clubs),
+        PlayingCard(CardRank.two, CardColor.clubs),
+        PlayingCard(CardRank.three, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(
+          cardsFirstPlayer, cardsSecondPlayer, -1);
+    });
+    test('fourOfAKind vs fourOfAKind, first player has stronger fourOfAKind',
+        () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.six, CardColor.diamonds),
+        PlayingCard(CardRank.six, CardColor.hearts),
+        PlayingCard(CardRank.six, CardColor.clubs),
+        PlayingCard(CardRank.six, CardColor.hearts),
+        PlayingCard(CardRank.king, CardColor.diamonds)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.queen, CardColor.diamonds),
+        PlayingCard(CardRank.two, CardColor.hearts),
+        PlayingCard(CardRank.two, CardColor.clubs),
+        PlayingCard(CardRank.two, CardColor.clubs),
+        PlayingCard(CardRank.two, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(
+          cardsFirstPlayer, cardsSecondPlayer, -1);
+    });
+    test(
+        'threeOfAKind vs threeOfAKind, second player has stronger threeOfAKind',
+        () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.three, CardColor.diamonds),
+        PlayingCard(CardRank.three, CardColor.hearts),
+        PlayingCard(CardRank.three, CardColor.clubs),
+        PlayingCard(CardRank.king, CardColor.hearts),
+        PlayingCard(CardRank.ace, CardColor.diamonds)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.five, CardColor.diamonds),
+        PlayingCard(CardRank.five, CardColor.hearts),
+        PlayingCard(CardRank.five, CardColor.clubs),
+        PlayingCard(CardRank.six, CardColor.clubs),
+        PlayingCard(CardRank.seven, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(cardsFirstPlayer, cardsSecondPlayer, 1);
+    });
+    test('fullHouse vs fullHouse, first player has stronger fullHouse', () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.three, CardColor.diamonds),
+        PlayingCard(CardRank.three, CardColor.hearts),
+        PlayingCard(CardRank.three, CardColor.clubs),
+        PlayingCard(CardRank.king, CardColor.hearts),
+        PlayingCard(CardRank.king, CardColor.diamonds)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.two, CardColor.diamonds),
+        PlayingCard(CardRank.two, CardColor.hearts),
+        PlayingCard(CardRank.two, CardColor.clubs),
+        PlayingCard(CardRank.ace, CardColor.clubs),
+        PlayingCard(CardRank.ace, CardColor.spades)
       ];
       handStrengthTester.testComparison(
           cardsFirstPlayer, cardsSecondPlayer, -1);
