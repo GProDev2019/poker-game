@@ -10,10 +10,57 @@ class HandStrengthTester {
         handStrengthChecker.checkHandStrength(cards);
     expect(handStrength.handName, expectedHandName);
   }
+
+  void testComparison(List<PlayingCard> cardsFirstPlayer,
+      List<PlayingCard> cardsSecondPlayer, int expectedWinningPlayer) {
+    final HandStrength handStrengthFirstPlayer =
+        handStrengthChecker.checkHandStrength(cardsFirstPlayer);
+    final HandStrength handStrengthSecondPlayer =
+        handStrengthChecker.checkHandStrength(cardsSecondPlayer);
+    expect(handStrengthFirstPlayer.compareTo(handStrengthSecondPlayer),
+        expectedWinningPlayer);
+  }
 }
 
 void main() {
   final HandStrengthTester handStrengthTester = HandStrengthTester();
+  group('Hand strength comparison', () {
+    test('pair vs twoPairs', () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.two, CardColor.diamonds),
+        PlayingCard(CardRank.two, CardColor.hearts),
+        PlayingCard(CardRank.seven, CardColor.clubs),
+        PlayingCard(CardRank.eight, CardColor.clubs),
+        PlayingCard(CardRank.jack, CardColor.spades)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.three, CardColor.diamonds),
+        PlayingCard(CardRank.three, CardColor.hearts),
+        PlayingCard(CardRank.eight, CardColor.clubs),
+        PlayingCard(CardRank.eight, CardColor.clubs),
+        PlayingCard(CardRank.jack, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(cardsFirstPlayer, cardsSecondPlayer, 1);
+    });
+    test('pair vs pair, first player has better rest of cards', () {
+      final List<PlayingCard> cardsFirstPlayer = <PlayingCard>[
+        PlayingCard(CardRank.two, CardColor.diamonds),
+        PlayingCard(CardRank.three, CardColor.hearts),
+        PlayingCard(CardRank.seven, CardColor.clubs),
+        PlayingCard(CardRank.jack, CardColor.clubs),
+        PlayingCard(CardRank.jack, CardColor.spades)
+      ];
+      final List<PlayingCard> cardsSecondPlayer = <PlayingCard>[
+        PlayingCard(CardRank.three, CardColor.diamonds),
+        PlayingCard(CardRank.three, CardColor.hearts),
+        PlayingCard(CardRank.seven, CardColor.clubs),
+        PlayingCard(CardRank.eight, CardColor.clubs),
+        PlayingCard(CardRank.jack, CardColor.spades)
+      ];
+      handStrengthTester.testComparison(
+          cardsFirstPlayer, cardsSecondPlayer, -1);
+    });
+  });
   group('Hand strength', () {
     test('Hand strength should be high card #1', () {
       final List<PlayingCard> cards = <PlayingCard>[
