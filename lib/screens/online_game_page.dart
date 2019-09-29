@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
+import 'package:poker_game/game_store/card_color.dart';
+import 'package:poker_game/game_store/game_store.dart';
 import 'package:redux/redux.dart';
 
 import 'package:poker_game/game_logic/actions.dart';
-import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/hand.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/routes.dart';
 
-class OfflineGamePage extends StatelessWidget {
-  static const Key replaceCardsButtonKey = Key('REPLACE_CARDS_BUTTON_KEY');
-  static const Key cardsKey = Key('CARDS_KEY_');
-  static const Key endTurnButtonKey = Key('END_TURN_BUTTON_KEY');
+class OnlineGamePage extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => StoreConnector<GameState, _ViewModel>(
-      converter: (Store<GameState> store) => _ViewModel.create(store),
+  Widget build(BuildContext context) => StoreConnector<GameStore, _ViewModel>(
+      converter: (Store<GameStore> store) => _ViewModel.create(store),
       builder: (BuildContext context, _ViewModel viewModel) {
         return Scaffold(
           appBar: AppBar(title: Text(viewModel.pageTitle)),
@@ -44,7 +42,6 @@ class OfflineGamePage extends StatelessWidget {
           final String cardRank = card.rank.toString().split('.').last;
           return Expanded(
               child: FlatButton(
-                  key: Key(cardsKey.toString() + i.toString()),
                   color: viewModel.getCardColor(i),
                   child: Column(
                     children: <Widget>[
@@ -62,7 +59,6 @@ class OfflineGamePage extends StatelessWidget {
   Widget _createReplaceCardsButton(_ViewModel viewModel) {
     return Container(
         child: FlatButton(
-      key: replaceCardsButtonKey,
       child: const Text('Replace Cards'),
       color: Colors.blue,
       disabledColor: Colors.grey,
@@ -74,7 +70,6 @@ class OfflineGamePage extends StatelessWidget {
     return Container(
         padding: const EdgeInsets.only(bottom: 30.0),
         child: FlatButton(
-          key: endTurnButtonKey,
           child: const Text('End Turn'),
           color: Colors.blue,
           onPressed: viewModel.onEndTurn,
@@ -94,17 +89,18 @@ class _ViewModel {
       this.onToggleSelectedCard, this.playerCards)
       : pageTitle = 'Player $currentPlayer';
 
-  factory _ViewModel.create(Store<GameState> store) {
-    final int currentPlayer = store.state.currentPlayer;
-    final bool replacedCards = store.state.players[currentPlayer].replacedCards;
+  factory _ViewModel.create(Store<GameStore> store) {
+    final int currentPlayer = store.state.gameState.currentPlayer;
+    final bool replacedCards =
+        store.state.gameState.players[currentPlayer].replacedCards;
     return _ViewModel(currentPlayer,
         replacedCards ? null : () => store.dispatch(ReplaceCardsAction()), () {
       store.dispatch(EndTurnAction());
-      if (store.state.gameEnded) {
+      if (store.state.gameState.gameEnded) {
         store.dispatch(NavigateToAction.replace(Routes.results));
       }
     }, (PlayingCard card) => store.dispatch(ToggleSelectedCardAction(card)),
-        store.state.players[currentPlayer].hand);
+        store.state.gameState.players[currentPlayer].hand);
   }
 
   Color getCardColor(int index) {

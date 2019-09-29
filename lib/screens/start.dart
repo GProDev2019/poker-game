@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
+import 'package:poker_game/game_store/game_store.dart';
 import 'package:redux/redux.dart';
 
 import 'package:poker_game/game_store/game_state.dart';
@@ -12,8 +13,8 @@ class StartPage extends StatelessWidget {
   static const Key passwordInputFieldKey = Key('PASSWORD_INPUT_FIELD_KEY');
 
   @override
-  Widget build(BuildContext context) => StoreConnector<GameState, _ViewModel>(
-      converter: (Store<GameState> store) => _ViewModel.create(store),
+  Widget build(BuildContext context) => StoreConnector<GameStore, _ViewModel>(
+      converter: (Store<GameStore> store) => _ViewModel.create(store),
       builder: (BuildContext context, _ViewModel viewModel) => Scaffold(
           appBar: AppBar(
             title: Text(viewModel.pageTitle),
@@ -32,7 +33,16 @@ class StartPage extends StatelessWidget {
                 child: const Text('PLAY OFFLINE'),
                 onPressed: () {
                   if (viewModel.canBeStarted) {
-                    viewModel.onPlayOffline();
+                    viewModel.onPlayOffline(viewModel.numOfPlayers);
+                  }
+                },
+              ),
+              FlatButton(
+                color: Colors.green,
+                child: const Text('PLAY ONLINE'),
+                onPressed: () {
+                  if (viewModel.canBeStarted) {
+                    viewModel.onPlayOnline();
                   }
                 },
               ),
@@ -40,29 +50,27 @@ class StartPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.only(left: 50), // ToDo: Fix this
                 child: Center(
-                  child: TextFormField(
-                    key: passwordInputFieldKey,
-                    expands: false,
-                    initialValue: '2',
-                    decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        border: InputBorder.none,
-                        hintText: 'Number of players'),
-                    onChanged: (String numOfPlayersText) => viewModel
-                        .onNumberOfPlayersChanged(int.parse(numOfPlayersText)),
-                    autovalidate: true,
-                    validator: (String numOfPlayersText) {
-                      final int numOfPlayers = int.parse(numOfPlayersText);
-                      if (numOfPlayers < GameState.minNumOfPlayers ||
-                          GameState.maxNumOfPlayers < numOfPlayers) {
-                        viewModel.canBeStarted = false;
-                        return 'Number of players should be between 2 and 5!';
-                      }
-                      viewModel.canBeStarted = true;
-                      return null;
-                    },
-                  ),
-                ),
+                    child: TextFormField(
+                  expands: false,
+                  initialValue: '2',
+                  decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      border: InputBorder.none,
+                      hintText: 'Number of players'),
+                  onChanged: (String numOfPlayersText) =>
+                      viewModel.numOfPlayers = int.parse(numOfPlayersText),
+                  autovalidate: true,
+                  validator: (String numOfPlayersText) {
+                    final int numOfPlayers = int.parse(numOfPlayersText);
+                    if (numOfPlayers < GameState.minNumOfPlayers ||
+                        GameState.maxNumOfPlayers < numOfPlayers) {
+                      viewModel.canBeStarted = false;
+                      return 'Number of players should be between 2 and 5!';
+                    }
+                    viewModel.canBeStarted = true;
+                    return null;
+                  },
+                )),
               ),
             ]),
       );
@@ -75,18 +83,20 @@ class _ViewModel {
   final String pageTitle;
   final bool isGameStarted; // ToDo: Probably not needed
   bool canBeStarted = true;
-  final Function() onPlayOffline;
-  final Function(int numOfPlayers) onNumberOfPlayersChanged;
+  int numOfPlayers;
+  final Function(int numOfPlayers) onPlayOffline;
+  final Function() onPlayOnline;
 
   _ViewModel(this.pageTitle, this.isGameStarted, this.onPlayOffline,
-      this.onNumberOfPlayersChanged);
+      this.onPlayOnline);
 
-  factory _ViewModel.create(Store<GameState> store) {
-    return _ViewModel('Main menu', false, () {
-      store.dispatch(StartOfflineGameAction());
+  factory _ViewModel.create(Store<GameStore> store) {
+    return _ViewModel('Main menu', false, (int numOfPlayers) {
+      store.dispatch(StartOfflineGameAction(numOfPlayers));
       store.dispatch(NavigateToAction.push(Routes.offlineGame));
-    },
-        (int numOfPlayers) =>
-            store.dispatch(ChangeNumberOfPlayersAction(numOfPlayers)));
+    }, () {
+      store.dispatch(DownloadRoomsAction());
+      store.dispatch(NavigateToAction.push(Routes.rooms));
+    });
   }
 }

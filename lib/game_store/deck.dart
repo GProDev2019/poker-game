@@ -1,5 +1,11 @@
+import 'package:json_annotation/json_annotation.dart';
+import 'card_color.dart';
+import 'card_rank.dart';
 import 'playing_card.dart';
 
+part 'deck.g.dart';
+
+@JsonSerializable()
 class Deck {
   List<PlayingCard> cards;
   static const int numOfCards = 52;
@@ -15,4 +21,8 @@ class Deck {
     }
     return Deck(cards);
   }
+
+  factory Deck.fromJson(Map<String, dynamic> json) => _$DeckFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DeckToJson(this);
 }

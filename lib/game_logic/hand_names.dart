@@ -1,3 +1,4 @@
+import 'package:poker_game/game_store/card_rank.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 
 enum HandName {
@@ -102,6 +103,13 @@ class HandStrength implements Comparable<HandStrength> {
         throw 'Something is wrong with players hands as comparison of these two is not supported. First player: $handName, Second player: ${otherHandStrength.handName}';
     }
   }
+
+  HandStrength.fromJson(Map<String, dynamic> json)
+      : handName = json['handName'],
+        cardRanks = json['cardRanks'];
+
+  Map<String, dynamic> toJson() =>
+      <String, dynamic>{'handName': handName, 'cardRanks': cardRanks};
 }
 
 class HandStrengthChecker {

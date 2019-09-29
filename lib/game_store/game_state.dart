@@ -1,28 +1,26 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'deck.dart';
 import 'player.dart';
 
+part 'game_state.g.dart';
+
+enum HandOutStrategy { oneByOneCard, allCardsAtOnce }
+
+@JsonSerializable()
 class GameState {
-  Deck deck;
-  List<Player> players;
-  int currentPlayer;
-  int numOfPlayers;
-  HandOutStrategy handOutStrategy;
-  bool gameEnded;
+  Deck deck = Deck.initial();
+  List<Player> players = <Player>[];
+  int currentPlayer = 0;
+  int numOfPlayers = 0;
+  HandOutStrategy handOutStrategy = HandOutStrategy.oneByOneCard;
+  bool gameEnded = false;
   static const int minNumOfPlayers = 2;
   static const int maxNumOfPlayers = 5;
 
-  GameState(
-      [this.numOfPlayers = 2,
-      this.handOutStrategy = HandOutStrategy.oneByOneCard])
-      : assert(numOfPlayers < maxNumOfPlayers),
-        deck = Deck.initial(),
-        players = List<Player>.generate(
-            numOfPlayers, (int index) => Player(index),
-            growable: false),
-        currentPlayer = 0,
-        gameEnded = false;
+  GameState();
 
-  factory GameState.initial() => GameState();
+  factory GameState.fromJson(Map<String, dynamic> json) =>
+      _$GameStateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GameStateToJson(this);
 }
-
-enum HandOutStrategy { oneByOneCard, allCardsAtOnce }
