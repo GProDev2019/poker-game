@@ -8,6 +8,9 @@ import 'package:poker_game/game_logic/actions.dart';
 import 'package:poker_game/routes.dart';
 
 class StartPage extends StatelessWidget {
+  static const Key offlineButtonKey = Key('OFFLINE_BUTTON_KEY');
+  static const Key passwordInputFieldKey = Key('PASSWORD_INPUT_FIELD_KEY');
+
   @override
   Widget build(BuildContext context) => StoreConnector<GameState, _ViewModel>(
       converter: (Store<GameState> store) => _ViewModel.create(store),
@@ -24,6 +27,7 @@ class StartPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               FlatButton(
+                key: offlineButtonKey,
                 color: Colors.green,
                 child: const Text('PLAY OFFLINE'),
                 onPressed: () {
@@ -37,6 +41,7 @@ class StartPage extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 50), // ToDo: Fix this
                 child: Center(
                   child: TextFormField(
+                    key: passwordInputFieldKey,
                     expands: false,
                     initialValue: '2',
                     decoration: InputDecoration(
