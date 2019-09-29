@@ -1,7 +1,11 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'package:poker_game/game_logic/hand_names.dart';
 
 import 'hand.dart';
 
+part 'player.g.dart';
+
+@JsonSerializable()
 class Player implements Comparable<Player> {
   Hand hand;
   HandStrength handStrength;
@@ -16,4 +20,8 @@ class Player implements Comparable<Player> {
   int compareTo(Player otherPlayer) {
     return handStrength.compareTo(otherPlayer.handStrength);
   }
+
+  factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PlayerToJson(this);
 }

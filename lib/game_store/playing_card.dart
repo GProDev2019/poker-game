@@ -1,21 +1,11 @@
-enum CardColor { hearts, diamonds, clubs, spades }
+import 'package:json_annotation/json_annotation.dart';
 
-enum CardRank {
-  two,
-  three,
-  four,
-  five,
-  six,
-  seven,
-  eight,
-  nine,
-  ten,
-  jack,
-  queen,
-  king,
-  ace
-}
+import 'card_color.dart';
+import 'card_rank.dart';
 
+part 'playing_card.g.dart';
+
+@JsonSerializable()
 class PlayingCard implements Comparable<PlayingCard> {
   static const CardRank minCardRank = CardRank.two;
   static const CardRank maxCardRank = CardRank.ace;
@@ -35,4 +25,9 @@ class PlayingCard implements Comparable<PlayingCard> {
       return rank.index - otherCard.rank.index;
     }
   }
+
+  factory PlayingCard.fromJson(Map<String, dynamic> json) =>
+      _$PlayingCardFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PlayingCardToJson(this);
 }
