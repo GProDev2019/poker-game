@@ -20,6 +20,8 @@ class Dispatcher {
         return _replaceCards(state);
       case EndTurnAction:
         return _endTurn(state);
+      case BackToMenuAction:
+        return _backToMenu(state);
       default:
         throw "Unhandled action or state didn't change (Reducer shouldn't return the same state), action: ${action.toString()}";
     }
@@ -129,18 +131,21 @@ class Dispatcher {
   }
 
   GameState _endGame(GameState state) {
-    state = _compareHands(state);
+    state = _calculateHands(state);
     state.gameEnded = true;
     return state;
   }
 
-  GameState _compareHands(GameState state) {
-    final List<HandStrength> playersHandStrength = <HandStrength>[];
+  GameState _calculateHands(GameState state) {
     for (Player player in state.players) {
-      playersHandStrength
-          .add(_handStrengthChecker.checkHandStrength(player.hand.cards));
+      player.handStrength =
+          _handStrengthChecker.checkHandStrength(player.hand.cards);
     }
-    playersHandStrength.sort();
+    return state;
+  }
+
+  GameState _backToMenu(GameState state) {
+    state = GameState.initial();
     return state;
   }
 }
