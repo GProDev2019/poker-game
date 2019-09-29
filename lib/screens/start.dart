@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
 import 'package:redux/redux.dart';
 
 import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_logic/actions.dart';
+import 'package:poker_game/routes.dart';
 
 class StartPage extends StatelessWidget {
   @override
@@ -27,7 +29,6 @@ class StartPage extends StatelessWidget {
                 onPressed: () {
                   if (viewModel.canBeStarted) {
                     viewModel.onPlayOffline();
-                    Navigator.pushNamed(context, '/offlineGame');
                   }
                 },
               ),
@@ -67,7 +68,7 @@ class StartPage extends StatelessWidget {
 
 class _ViewModel {
   final String pageTitle;
-  final bool isGameStarted;
+  final bool isGameStarted; // ToDo: Probably not needed
   bool canBeStarted = true;
   final Function() onPlayOffline;
   final Function(int numOfPlayers) onNumberOfPlayersChanged;
@@ -76,10 +77,10 @@ class _ViewModel {
       this.onNumberOfPlayersChanged);
 
   factory _ViewModel.create(Store<GameState> store) {
-    return _ViewModel(
-        'Main menu',
-        false,
-        () => store.dispatch(StartOfflineGameAction()),
+    return _ViewModel('Main menu', false, () {
+      store.dispatch(StartOfflineGameAction());
+      store.dispatch(NavigateToAction.push(Routes.offlineGame));
+    },
         (int numOfPlayers) =>
             store.dispatch(ChangeNumberOfPlayersAction(numOfPlayers)));
   }

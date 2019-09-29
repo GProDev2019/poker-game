@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
 import 'package:redux/redux.dart';
 
 import 'package:poker_game/game_logic/actions.dart';
@@ -46,7 +47,9 @@ class _ViewModel {
   }
 
   factory _ViewModel.create(Store<GameState> store) {
-    return _ViewModel(
-        store.state.players, () => store.dispatch(BackToMenuAction()));
+    return _ViewModel(store.state.players, () {
+      store.dispatch(BackToMenuAction());
+      store.dispatch(NavigateToAction.pop());
+    });
   }
 }
