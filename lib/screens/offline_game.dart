@@ -15,7 +15,7 @@ class OfflineGamePage extends StatelessWidget {
       builder: (BuildContext context, _ViewModel viewModel) {
         if (viewModel.gameEnded) {
           SchedulerBinding.instance.addPostFrameCallback((_) {
-            Navigator.pop(context);
+            Navigator.popAndPushNamed(context, '/results');
           });
         }
         return Scaffold(

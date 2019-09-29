@@ -6,6 +6,7 @@ import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/screens/start.dart';
 import 'package:poker_game/screens/offline_game.dart';
+import 'package:poker_game/screens/results.dart';
 
 void main() {
   runApp(PokerGame());
@@ -26,7 +27,8 @@ class PokerGame extends StatelessWidget {
             initialRoute: '/',
             routes: <String, WidgetBuilder>{
               '/': (BuildContext context) => StartPage(),
-              '/offlineGame': (BuildContext context) => OfflineGamePage()
+              '/offlineGame': (BuildContext context) => OfflineGamePage(),
+              '/results': (BuildContext context) => ResultsPage()
             },
             theme: ThemeData.light(),
             title: title));

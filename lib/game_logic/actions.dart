@@ -18,3 +18,5 @@ class ToggleSelectedCardAction {
 class ReplaceCardsAction {}
 
 class EndTurnAction {}
+
+class BackToMenuAction {}
