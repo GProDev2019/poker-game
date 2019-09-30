@@ -17,7 +17,10 @@ class EndTurnAction {}
 
 class BackToMenuAction {}
 
-class StartOnlineGameAction {}
+class StartOnlineGameAction {
+  final int numOfPlayers;
+  StartOnlineGameAction(this.numOfPlayers);
+}
 
 class DownloadRoomsAction {}
 

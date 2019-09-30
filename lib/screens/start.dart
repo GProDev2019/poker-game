@@ -83,7 +83,7 @@ class _ViewModel {
   final String pageTitle;
   final bool isGameStarted; // ToDo: Probably not needed
   bool canBeStarted = true;
-  int numOfPlayers;
+  int numOfPlayers = GameState.minNumOfPlayers;
   final Function(int numOfPlayers) onPlayOffline;
   final Function() onPlayOnline;
 

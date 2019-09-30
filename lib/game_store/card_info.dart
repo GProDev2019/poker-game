@@ -1,3 +1,5 @@
+enum CardColor { hearts, diamonds, clubs, spades }
+
 enum CardRank {
   two,
   three,

@@ -64,7 +64,10 @@ class _ViewModel {
 
   factory _ViewModel.create(Store<GameStore> store) {
     return _ViewModel(store.state.rooms[store.state.currentRoom], () {
-      store.dispatch(StartOnlineGameAction());
+      store.dispatch(StartOnlineGameAction(
+          store.state.rooms[store.state.currentRoom].gameState.players.length));
+      store.dispatch(
+          UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
       store.dispatch(NavigateToAction.push(Routes.onlineGame));
     }, () {
       store.dispatch(ExitRoomAction());

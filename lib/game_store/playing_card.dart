@@ -1,7 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'card_color.dart';
-import 'card_rank.dart';
+import 'card_info.dart';
 
 part 'playing_card.g.dart';
 

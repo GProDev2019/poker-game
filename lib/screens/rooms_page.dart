@@ -28,7 +28,8 @@ class RoomsPage extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: GestureDetector(
                   onTap: () {
-                    viewModel.onEnterRoom(roomId);
+                    viewModel
+                        .onEnterRoom(roomId + 1); // Room 0 is for offline game
                   },
                   child: Card(
                     child: Text(

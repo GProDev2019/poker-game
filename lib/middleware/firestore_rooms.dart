@@ -14,14 +14,13 @@ class FirestoreRooms {
 
   Future<void> createNewRoom(Room room) async {
     // ToDo: refactor to avoid double update
-    final DocumentReference docRef = await firestore
-        .collection(path)
-        .add(<String, String>{'room': jsonEncode(room)});
+    final DocumentReference docRef =
+        await firestore.collection(path).add(jsonDecode(jsonEncode(room)));
     room.id = docRef.documentID;
     return await firestore
         .collection(path)
         .document(docRef.documentID)
-        .setData(<String, dynamic>{'room': jsonEncode(room)}, merge: true);
+        .setData(jsonDecode(jsonEncode(room)), merge: true);
   }
 
   Future<void> deleteRoom(String id) async {
@@ -31,8 +30,7 @@ class FirestoreRooms {
   Stream<List<Room>> rooms() {
     return firestore.collection(path).snapshots().map((QuerySnapshot snapshot) {
       return snapshot.documents.map<Room>((DocumentSnapshot json) {
-        final dynamic roomMap = jsonDecode(json.data['room']);
-        return Room.fromJson(roomMap);
+        return Room.fromJson(jsonDecode(jsonEncode(json.data)));
       }).toList();
     });
   }
@@ -41,6 +39,6 @@ class FirestoreRooms {
     return firestore
         .collection(path)
         .document(room.id)
-        .updateData(<String, String>{'room': jsonEncode(room)});
+        .updateData(jsonDecode(jsonEncode(room)));
   }
 }

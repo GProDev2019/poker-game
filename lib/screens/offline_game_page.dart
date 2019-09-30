@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
-import 'package:poker_game/game_store/card_color.dart';
+import 'package:poker_game/game_logic/dispatcher.dart';
+import 'package:poker_game/game_store/card_info.dart';
 import 'package:poker_game/game_store/game_store.dart';
 import 'package:redux/redux.dart';
 
@@ -96,17 +97,19 @@ class _ViewModel {
       : pageTitle = 'Player $currentPlayer';
 
   factory _ViewModel.create(Store<GameStore> store) {
-    final int currentPlayer = store.state.gameState.currentPlayer;
-    final bool replacedCards =
-        store.state.gameState.players[currentPlayer].replacedCards;
+    final int currentPlayer =
+        Dispatcher.getGameState(store.state).currentPlayer;
+    final bool replacedCards = Dispatcher.getGameState(store.state)
+        .players[currentPlayer]
+        .replacedCards;
     return _ViewModel(currentPlayer,
         replacedCards ? null : () => store.dispatch(ReplaceCardsAction()), () {
       store.dispatch(EndTurnAction());
-      if (store.state.gameState.gameEnded) {
+      if (Dispatcher.getGameState(store.state).gameEnded) {
         store.dispatch(NavigateToAction.replace(Routes.results));
       }
     }, (PlayingCard card) => store.dispatch(ToggleSelectedCardAction(card)),
-        store.state.gameState.players[currentPlayer].hand);
+        Dispatcher.getGameState(store.state).players[currentPlayer].hand);
   }
 
   Color getCardColor(int index) {

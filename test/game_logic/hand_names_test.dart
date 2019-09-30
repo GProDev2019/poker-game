@@ -1,6 +1,5 @@
 import 'package:poker_game/game_logic/hand_names.dart';
-import 'package:poker_game/game_store/card_color.dart';
-import 'package:poker_game/game_store/card_rank.dart';
+import 'package:poker_game/game_store/card_info.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:test/test.dart';
 

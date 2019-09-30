@@ -9,7 +9,7 @@ part 'game_store.g.dart';
 class GameStore {
   GameState gameState = GameState();
   List<Room> rooms = <Room>[];
-  int currentRoom = 0;
+  int currentRoom;
 
   GameStore();
 

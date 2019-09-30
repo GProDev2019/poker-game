@@ -4,194 +4,200 @@ import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/game_store/hand.dart';
 import 'package:poker_game/game_store/player.dart';
+import 'package:poker_game/middleware/room.dart';
 import 'actions.dart';
 import 'hand_names.dart';
 
 class Dispatcher {
   final HandStrengthChecker _handStrengthChecker = HandStrengthChecker();
+  GameStore _store;
+  GameState _state;
 
   GameStore dispatchPokerGameAction(GameStore store, dynamic action) {
+    _store = store;
+    _state = getGameState(_store);
     switch (action.runtimeType) {
       case NavigateToAction:
-        return store;
+        break;
       case StartOfflineGameAction:
-        return _startOfflineGame(store, action);
+        _startOfflineGame(action);
+        break;
       case StartOnlineGameAction:
-        return _startOnlineGame(store);
+        _startOnlineGame(action);
+        break;
       case LoadRoomsAction:
-        return _loadRooms(store, action);
+        _loadRooms(action);
+        break;
       case EnterRoomAction:
-        return _enterRoom(store, action);
+        _enterRoom(action);
+        break;
       case ExitRoomAction:
-        return _exitRoom(store);
+        _exitRoom();
+        break;
       case ToggleSelectedCardAction:
-        return _toggleCard(store, action);
+        _toggleCard(action);
+        break;
       case ReplaceCardsAction:
-        return _replaceCards(store);
+        _replaceCards();
+        break;
       case EndTurnAction:
-        return _endTurn(store);
+        _endTurn();
+        break;
       case BackToMenuAction:
-        return _backToMenu(store);
+        _backToMenu();
+        break;
       default:
-        print(
-            "Unhandled action or store didn't change (Reducer shouldn't return the same store), action: ${action.toString()}");
+        throw "Unhandled action or store didn't change (Reducer shouldn't return the same store), action: ${action.toString()}";
     }
-    return store;
+    _setGameState();
+    return _store;
   }
 
-  GameStore _updateNumberOfPlayers(GameStore store, int newNumofPlayers) {
-    store.gameState.players = List<Player>.generate(
+  static GameState getGameState(GameStore store) {
+    if (store.rooms.isEmpty) {
+      return null;
+    }
+    return store.rooms[store.currentRoom].gameState;
+  }
+
+  void _setGameState() {
+    _store.rooms[_store.currentRoom].gameState = _state;
+  }
+
+  void _createLocalRoom(String roomTitle) {
+    _store.rooms.insert(Room.offlineGameRoomId, Room(roomTitle, GameState()));
+    _store.currentRoom = Room.offlineGameRoomId;
+    _state = getGameState(_store);
+  }
+
+  void _updateNumberOfPlayers(int newNumofPlayers) {
+    _state.players = List<Player>.generate(
         newNumofPlayers, (int index) => Player(index),
         growable: false);
-    return store;
   }
 
-  GameStore _startOfflineGame(GameStore store, StartOfflineGameAction action) {
-    store = _updateNumberOfPlayers(store, action.numOfPlayers);
-    store = _shuffleDeck(store);
-    store = _handOutCardsToPlayers(store);
-    return store;
+  void _shuffleDeck() {
+    _state.deck.cards.shuffle();
   }
 
-  GameStore _startOnlineGame(GameStore store) {
-    store = _shuffleDeck(store);
-    store = _handOutCardsToPlayers(store);
-    return store;
+  void _startOfflineGame(StartOfflineGameAction action) {
+    _createLocalRoom('Local');
+    _updateNumberOfPlayers(action.numOfPlayers);
+    _shuffleDeck();
+    _handOutCardsToPlayers();
   }
 
-  GameStore _loadRooms(GameStore store, LoadRoomsAction action) {
-    store.rooms = action.rooms;
-    return store;
+  void _startOnlineGame(StartOnlineGameAction action) {
+    _updateNumberOfPlayers(action.numOfPlayers);
+    _shuffleDeck();
+    _handOutCardsToPlayers();
   }
 
-  GameStore _enterRoom(GameStore store, EnterRoomAction action) {
-    store.currentRoom = action.roomId;
-    if (store.rooms[action.roomId].gameState == null) {
-      store.rooms[action.roomId].gameState = store.gameState;
-    }
-    store.gameState.currentPlayer =
-        store.rooms[action.roomId].gameState.players.length;
-    store.rooms[action.roomId].gameState.players
-        .add(Player(store.rooms[action.roomId].gameState.players.length));
-    return store;
+  void _loadRooms(LoadRoomsAction action) {
+    _store.rooms = action.rooms;
   }
 
-  GameStore _exitRoom(GameStore store) {
-    store.rooms[store.currentRoom].gameState.players
-        .removeWhere((Player player) {
-      return player.playerIndex == store.gameState.currentPlayer;
+  void _enterRoom(EnterRoomAction action) {
+    _store.currentRoom = action.roomId;
+    _state.currentPlayer = _state.players.length;
+    _state.players.add(Player(_state.currentPlayer));
+  }
+
+  void _exitRoom() {
+    _state.players.removeWhere((Player player) {
+      return player.playerIndex == _state.currentPlayer;
     });
-    return store;
   }
 
-  GameStore _shuffleDeck(GameStore store) {
-    store.gameState.deck.cards.shuffle();
-    return store;
-  }
-
-  GameStore _handOutCardsToPlayers(GameStore store) {
-    if (HandOutStrategy.allCardsAtOnce == store.gameState.handOutStrategy) {
-      store = _allCardsAtOnceHandOutStrategy(store);
-    } else if (HandOutStrategy.oneByOneCard ==
-        store.gameState.handOutStrategy) {
-      store = _oneByOneCardHandOutStrategy(store);
+  void _handOutCardsToPlayers() {
+    if (HandOutStrategy.allCardsAtOnce == _state.handOutStrategy) {
+      _allCardsAtOnceHandOutStrategy();
+    } else if (HandOutStrategy.oneByOneCard == _state.handOutStrategy) {
+      _oneByOneCardHandOutStrategy();
     }
-    store = _sortPlayersCards(store);
-    return store;
+    _sortPlayersCards();
   }
 
-  GameStore _allCardsAtOnceHandOutStrategy(GameStore store) {
+  void _allCardsAtOnceHandOutStrategy() {
     for (int playerIndex = 0;
-        playerIndex < store.gameState.players.length;
+        playerIndex < _state.players.length;
         playerIndex++) {
       for (int cardNum = 0; cardNum < Hand.maxNumOfCards; cardNum++) {
-        store = _handOutCardToPlayer(store, playerIndex);
+        _handOutCardToPlayer(playerIndex);
       }
     }
-    return store;
   }
 
-  GameStore _oneByOneCardHandOutStrategy(GameStore store) {
+  void _oneByOneCardHandOutStrategy() {
     for (int cardNum = 0; cardNum < Hand.maxNumOfCards; cardNum++) {
       for (int playerIndex = 0;
-          playerIndex < store.gameState.players.length;
+          playerIndex < _state.players.length;
           playerIndex++) {
-        store = _handOutCardToPlayer(store, playerIndex);
+        _handOutCardToPlayer(playerIndex);
       }
     }
-    return store;
   }
 
-  GameStore _handOutCardToPlayer(GameStore store, int playerIndex) {
-    store.gameState.players[playerIndex].hand.cards
-        .add(store.gameState.deck.cards.removeLast());
-    return store;
+  void _handOutCardToPlayer(int playerIndex) {
+    _state.players[playerIndex].hand.cards.add(_state.deck.cards.removeLast());
   }
 
-  GameStore _sortPlayersCards(GameStore store) {
+  void _sortPlayersCards() {
     for (int playerIndex = 0;
-        playerIndex < store.gameState.players.length;
+        playerIndex < _state.players.length;
         playerIndex++) {
-      store = _sortPlayerCards(store, playerIndex);
+      _sortPlayerCards(playerIndex);
     }
-    return store;
   }
 
-  GameStore _sortPlayerCards(GameStore store, int playerIndex) {
-    store.gameState.players[playerIndex].hand.cards
+  void _sortPlayerCards(int playerIndex) {
+    _state.players[playerIndex].hand.cards
         .sort((PlayingCard lCard, PlayingCard rCard) => lCard.compareTo(rCard));
-    return store;
   }
 
-  GameStore _toggleCard(GameStore store, ToggleSelectedCardAction action) {
-    store.gameState.players[store.gameState.currentPlayer].hand.cards
+  void _toggleCard(ToggleSelectedCardAction action) {
+    _state.players[_state.currentPlayer].hand.cards
         .firstWhere((PlayingCard card) =>
             card.color == action.selectedCard.color &&
             card.rank == action.selectedCard.rank)
         .selectedForReplace = !action.selectedCard.selectedForReplace;
-    return store;
   }
 
-  GameStore _replaceCards(GameStore store) {
-    final int numOfCardsToReplace = store
-        .gameState.players[store.gameState.currentPlayer].hand.cards
+  void _replaceCards() {
+    final int numOfCardsToReplace = _state
+        .players[_state.currentPlayer].hand.cards
         .where((PlayingCard card) => card.selectedForReplace)
         .length;
-    store.gameState.players[store.gameState.currentPlayer].hand.cards
+    _state.players[_state.currentPlayer].hand.cards
         .removeWhere((PlayingCard card) => card.selectedForReplace);
     for (int cardNum = 0; cardNum < numOfCardsToReplace; cardNum++) {
-      store = _handOutCardToPlayer(store, store.gameState.currentPlayer);
+      _handOutCardToPlayer(_state.currentPlayer);
     }
-    _sortPlayerCards(store, store.gameState.currentPlayer);
-    store.gameState.players[store.gameState.currentPlayer].replacedCards = true;
-    return store;
+    _sortPlayerCards(_state.currentPlayer);
+    _state.players[_state.currentPlayer].replacedCards = true;
   }
 
-  GameStore _endTurn(GameStore store) {
-    if (store.gameState.currentPlayer == store.gameState.players.length - 1) {
-      store = _endGame(store);
+  void _endTurn() {
+    if (_state.currentPlayer == _state.players.length - 1) {
+      _endGame();
     } else {
-      store.gameState.currentPlayer += 1;
+      _state.currentPlayer += 1;
     }
-    return store;
   }
 
-  GameStore _endGame(GameStore store) {
-    store = _calculateHands(store);
-    store.gameState.gameEnded = true;
-    return store;
+  void _endGame() {
+    _calculateHands();
+    _state.gameEnded = true;
   }
 
-  GameStore _calculateHands(GameStore store) {
-    for (Player player in store.gameState.players) {
+  void _calculateHands() {
+    for (Player player in _state.players) {
       player.handStrength =
           _handStrengthChecker.checkHandStrength(player.hand.cards);
     }
-    return store;
   }
 
-  GameStore _backToMenu(GameStore store) {
-    store = GameStore.initial();
-    return store;
+  void _backToMenu() {
+    _store = GameStore.initial();
   }
 }

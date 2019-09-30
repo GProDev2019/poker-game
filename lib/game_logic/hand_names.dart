@@ -1,4 +1,4 @@
-import 'package:poker_game/game_store/card_rank.dart';
+import 'package:poker_game/game_store/card_info.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 
 enum HandName {
