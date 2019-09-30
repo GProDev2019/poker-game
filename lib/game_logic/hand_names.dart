@@ -14,12 +14,93 @@ enum HandName {
 
 class HandStrength implements Comparable<HandStrength> {
   HandName handName;
+  CardRank higherCardRank;
+  CardRank lowerCardRank;
   List<CardRank> cardRanks;
-  HandStrength(this.handName, this.cardRanks);
+  HandStrength(this.handName, this.cardRanks,
+      [this.higherCardRank, this.lowerCardRank]);
 
   @override
   int compareTo(HandStrength otherHandStrength) {
-    return 1; // ToDo: Implement comparator
+    if (handName.index > otherHandStrength.handName.index) {
+      return -1;
+    } else if (handName.index == otherHandStrength.handName.index) {
+      return _checkStrengthWhenEqual(otherHandStrength);
+    } else {
+      return 1;
+    }
+  }
+
+  int _checkStrengthWhenEqual(HandStrength otherHandStrength) {
+    switch (handName) {
+      case HandName.highCard:
+      case HandName.straight:
+      case HandName.flush:
+      case HandName.poker:
+      case HandName.threeOfAKind:
+      case HandName.fourOfAKind:
+      case HandName.fullHouse:
+        for (int i = cardRanks.length - 1; i >= 0; i--) {
+          if (cardRanks[i].index > otherHandStrength.cardRanks[i].index) {
+            return -1;
+          } else if (cardRanks[i].index <
+              otherHandStrength.cardRanks[i].index) {
+            return 1;
+          }
+        }
+        return 0;
+      case HandName.pair:
+        if (higherCardRank.index > otherHandStrength.higherCardRank.index) {
+          return -1;
+        } else if (higherCardRank.index <
+            otherHandStrength.higherCardRank.index) {
+          return 1;
+        }
+        final List<CardRank> leftCardRanks =
+            cardRanks.where((CardRank card) => card != higherCardRank).toList();
+        final List<CardRank> rightCardRanks = otherHandStrength.cardRanks
+            .where((CardRank card) => card != higherCardRank)
+            .toList();
+        for (int i = leftCardRanks.length - 1; i >= 0; i--) {
+          if (leftCardRanks[i].index > rightCardRanks[i].index) {
+            return -1;
+          } else if (leftCardRanks[i].index < rightCardRanks[i].index) {
+            return 1;
+          }
+        }
+        return 0;
+      case HandName.twoPairs:
+        if (higherCardRank.index > otherHandStrength.higherCardRank.index) {
+          return -1;
+        } else if (higherCardRank.index <
+            otherHandStrength.higherCardRank.index) {
+          return 1;
+        }
+        if (lowerCardRank.index > otherHandStrength.lowerCardRank.index) {
+          return -1;
+        } else if (lowerCardRank.index <
+            otherHandStrength.lowerCardRank.index) {
+          return 1;
+        }
+        final List<CardRank> leftCardRanks = cardRanks
+            .where((CardRank card) =>
+                card != higherCardRank && card != lowerCardRank)
+            .toList();
+        final List<CardRank> rightCardRanks = otherHandStrength.cardRanks
+            .where((CardRank card) =>
+                card != higherCardRank && card != lowerCardRank)
+            .toList();
+        for (int i = leftCardRanks.length - 1; i >= 0; i--) {
+          if (leftCardRanks[i].index > rightCardRanks[i].index) {
+            return -1;
+          } else if (leftCardRanks[i].index < rightCardRanks[i].index) {
+            return 1;
+          }
+        }
+        return 0;
+      default:
+        throw 'Something is wrong with players hands as comparison of these two is not supported. First player: $handName, Second player: ${otherHandStrength.handName}';
+    }
   }
 }
 
@@ -87,7 +168,7 @@ class HandStrengthChecker {
         _cards.sublist(3, 5).every(
             (PlayingCard card) => card.rank.index == _cards[3].rank.index)) {
       return HandStrength(
-          HandName.fullHouse, <CardRank>[_cards[0].rank, _cards[3].rank]);
+          HandName.fullHouse, <CardRank>[_cards[3].rank, _cards[0].rank]);
     } else if (_cards.sublist(0, 2).every(
             (PlayingCard card) => card.rank.index == _cards[0].rank.index) &&
         _cards.sublist(2, 5).every(
@@ -143,15 +224,18 @@ class HandStrengthChecker {
 
   HandStrength _isTwoPairs() {
     int pairs = 0;
+    final List<CardRank> foundPairsRank = <CardRank>[];
     for (int cardNum = 0; cardNum < _cards.length - 1; cardNum++) {
       if (_cards.sublist(cardNum, cardNum + 2).every((PlayingCard card) =>
           card.rank.index == _cards[cardNum].rank.index)) {
+        foundPairsRank.add(_cards[cardNum].rank);
         pairs++;
         cardNum++;
       }
     }
     if (pairs == 2) {
-      return HandStrength(HandName.twoPairs, _getCardRankList());
+      return HandStrength(HandName.twoPairs, _getCardRankList(),
+          foundPairsRank[1], foundPairsRank[0]);
     }
     return null;
   }
@@ -160,7 +244,8 @@ class HandStrengthChecker {
     for (int cardNum = 0; cardNum < _cards.length - 1; cardNum++) {
       if (_cards.sublist(cardNum, cardNum + 2).every((PlayingCard card) =>
           card.rank.index == _cards[cardNum].rank.index)) {
-        return HandStrength(HandName.pair, _getCardRankList());
+        return HandStrength(
+            HandName.pair, _getCardRankList(), _cards[cardNum].rank);
       }
     }
     return null;

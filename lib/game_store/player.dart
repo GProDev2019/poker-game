@@ -6,9 +6,11 @@ class Player implements Comparable<Player> {
   Hand hand;
   HandStrength handStrength;
   int playerIndex;
-  bool replacedCards = false;
+  bool replacedCards;
 
-  Player(this.playerIndex) : hand = Hand();
+  Player(this.playerIndex)
+      : hand = Hand(),
+        replacedCards = false;
 
   @override
   int compareTo(Player otherPlayer) {

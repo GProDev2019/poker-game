@@ -1,3 +1,4 @@
+import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
 import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/game_store/hand.dart';
@@ -10,6 +11,8 @@ class Dispatcher {
 
   GameState dispatchPokerGameAction(GameState state, dynamic action) {
     switch (action.runtimeType) {
+      case NavigateToAction:
+        return state;
       case ChangeNumberOfPlayersAction:
         return _changeNumberOfPlayers(state, action);
       case StartOfflineGameAction:
