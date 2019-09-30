@@ -70,14 +70,15 @@ class _ViewModel {
       this.rooms, this.onBackToMenu, this.onCreateNewRoom, this.onEnterRoom);
 
   factory _ViewModel.create(Store<GameStore> store) {
-    return _ViewModel(store.state.rooms, () {
+    return _ViewModel(store.state.onlineRooms, () {
       store.dispatch(BackToMenuAction());
       store.dispatch(NavigateToAction.pop());
     }, () {
-      store.dispatch(CreateRoomAction(Room('title1', store.state.gameState)));
+      store.dispatch(
+          CreateRoomAction(Room('title1', store.state.offlineGameState)));
     }, (int roomId) {
       store.dispatch(EnterRoomAction(roomId));
-      store.dispatch(UpdateRoomAction(store.state.rooms[roomId]));
+      store.dispatch(UpdateRoomAction(store.state.onlineRooms[roomId]));
       store.dispatch(NavigateToAction.push(Routes.room));
     });
   }

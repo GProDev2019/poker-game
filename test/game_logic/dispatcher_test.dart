@@ -14,9 +14,11 @@ class DispatcherTester {
   void testOfflineGameStart([int numOfPlayers = 2]) {
     dispatcher.dispatchPokerGameAction(
         store, StartOfflineGameAction(numOfPlayers));
-    expect(store.gameState.deck.cards.length,
-        Deck.numOfCards - store.gameState.players.length * Hand.maxNumOfCards);
-    for (Player player in store.gameState.players) {
+    expect(
+        store.offlineGameState.deck.cards.length,
+        Deck.numOfCards -
+            store.offlineGameState.players.length * Hand.maxNumOfCards);
+    for (Player player in store.offlineGameState.players) {
       expect(player.hand.cards.length, Hand.maxNumOfCards);
     }
   }
@@ -27,7 +29,7 @@ class DispatcherTester {
         store, ToggleSelectedCardAction(selectedCard));
     expect(
         expectedValue,
-        store.gameState.players[playerIndex].hand.cards
+        store.offlineGameState.players[playerIndex].hand.cards
             .firstWhere((PlayingCard card) =>
                 card.color == selectedCard.color &&
                 card.rank == selectedCard.rank)
@@ -37,10 +39,10 @@ class DispatcherTester {
   void testReplaceCard(
       int playerIndex, int cardIndex, PlayingCard replacedCard) {
     dispatcher.dispatchPokerGameAction(store, ReplaceCardsAction());
-    expect(true, store.gameState.players[playerIndex].replacedCards);
+    expect(true, store.offlineGameState.players[playerIndex].replacedCards);
     expect(
         false,
-        store.gameState.players[playerIndex].hand.cards[cardIndex] ==
+        store.offlineGameState.players[playerIndex].hand.cards[cardIndex] ==
             replacedCard);
   }
 }
@@ -60,7 +62,7 @@ void main() {
       const int cardIndexToReplace = 0;
       dispatcherTester.testTogglingCard(
           playerIndex,
-          dispatcherTester.store.gameState.players[playerIndex].hand
+          dispatcherTester.store.offlineGameState.players[playerIndex].hand
               .cards[cardIndexToReplace],
           true);
     });
@@ -70,25 +72,25 @@ void main() {
       const int card1IndexToReplace = 0;
       dispatcherTester.testTogglingCard(
           player1Index,
-          dispatcherTester.store.gameState.players[player1Index].hand
+          dispatcherTester.store.offlineGameState.players[player1Index].hand
               .cards[card1IndexToReplace],
           true);
       dispatcherTester.testTogglingCard(
           player1Index,
-          dispatcherTester.store.gameState.players[player1Index].hand
+          dispatcherTester.store.offlineGameState.players[player1Index].hand
               .cards[card1IndexToReplace],
           false);
       const int player2Index = 1;
-      dispatcherTester.store.gameState.currentPlayer = player2Index;
+      dispatcherTester.store.offlineGameState.currentPlayer = player2Index;
       const int card2IndexToReplace = 2;
       dispatcherTester.testTogglingCard(
           player2Index,
-          dispatcherTester.store.gameState.players[player2Index].hand
+          dispatcherTester.store.offlineGameState.players[player2Index].hand
               .cards[card2IndexToReplace],
           true);
       dispatcherTester.testTogglingCard(
           player2Index,
-          dispatcherTester.store.gameState.players[player2Index].hand
+          dispatcherTester.store.offlineGameState.players[player2Index].hand
               .cards[card2IndexToReplace],
           false);
     });
@@ -96,8 +98,8 @@ void main() {
       dispatcherTester.testOfflineGameStart();
       const int playerIndex = 0;
       const int cardIndexToReplace = 0;
-      final PlayingCard cardToReplace = dispatcherTester
-          .store.gameState.players[playerIndex].hand.cards[cardIndexToReplace];
+      final PlayingCard cardToReplace = dispatcherTester.store.offlineGameState
+          .players[playerIndex].hand.cards[cardIndexToReplace];
       dispatcherTester.testTogglingCard(playerIndex, cardToReplace, true);
       dispatcherTester.testReplaceCard(
           playerIndex, cardIndexToReplace, cardToReplace);

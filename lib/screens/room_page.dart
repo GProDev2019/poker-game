@@ -81,7 +81,8 @@ class _ViewModel {
       startGameButtonText = 'Join game';
     }
 
-    return _ViewModel(store.state.rooms[store.state.currentRoom], () {
+    return _ViewModel(store.state.onlineRooms[store.state.currentOnlineRoom],
+        () {
       if (onlinePlayerIndex != -1 &&
           Dispatcher.getGameState(store.state)
                   .players[onlinePlayerIndex]
@@ -97,8 +98,8 @@ class _ViewModel {
         if (GameState.minNumOfPlayers <= numOfPlayers &&
             numOfPlayers <= GameState.maxNumOfPlayers) {
           store.dispatch(StartOnlineGameAction(numOfPlayers));
-          store.dispatch(
-              UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
+          store.dispatch(UpdateRoomAction(
+              store.state.onlineRooms[store.state.currentOnlineRoom]));
           store.dispatch(NavigateToAction.push(Routes.onlineGame));
         } else {
           // ToDo: Show error
@@ -106,8 +107,8 @@ class _ViewModel {
       }
     }, () {
       store.dispatch(ExitRoomAction());
-      store.dispatch(
-          UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
+      store.dispatch(UpdateRoomAction(
+          store.state.onlineRooms[store.state.currentOnlineRoom]));
       store.dispatch(NavigateToAction.pop());
     }, startGameButtonText);
   }

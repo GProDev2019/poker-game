@@ -62,7 +62,7 @@ void Function(
 ) {
   return (Store<GameStore> store, DeleteRooomAction action,
       NextDispatcher next) {
-    firestoreRooms.deleteRoom(action.id);
+    firestoreRooms.deleteRoom(action.roomId);
   };
 }
 

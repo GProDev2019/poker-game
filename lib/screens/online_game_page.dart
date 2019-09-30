@@ -102,20 +102,20 @@ class _ViewModel {
             : () {
                 store.dispatch(ReplaceCardsAction());
                 store.dispatch(UpdateRoomAction(
-                    store.state.rooms[store.state.currentRoom]));
+                    store.state.onlineRooms[store.state.currentOnlineRoom]));
               }, () {
       if (!Dispatcher.getGameState(store.state).gameEnded) {
         store.dispatch(EndTurnAction());
-        store.dispatch(
-            UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
+        store.dispatch(UpdateRoomAction(
+            store.state.onlineRooms[store.state.currentOnlineRoom]));
       }
       if (Dispatcher.getGameState(store.state).gameEnded) {
         store.dispatch(NavigateToAction.replace(Routes.results));
       }
     }, (PlayingCard card) {
       store.dispatch(ToggleSelectedCardAction(card));
-      store.dispatch(
-          UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
+      store.dispatch(UpdateRoomAction(
+          store.state.onlineRooms[store.state.currentOnlineRoom]));
     }, Dispatcher.getGameState(store.state).players[onlinePlayerIndex].hand);
   }
 

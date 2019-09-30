@@ -8,7 +8,7 @@ void subscribeForConnectivityChange(Store<GameStore> store) {
     if (result == ConnectivityResult.none) {
       store.dispatch(ClearRoomsAction());
     } else {
-      if (store.state.rooms.length == 1) {
+      if (store.state.onlineRooms.length == 1) {
         // ToDo: Do it prettier
         store.dispatch(DownloadRoomsAction());
       }
