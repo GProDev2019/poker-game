@@ -17,6 +17,7 @@ class GameState {
   int numOfPlayersEndTurns = 0;
   HandOutStrategy handOutStrategy = HandOutStrategy.oneByOneCard;
   bool gameEnded = false;
+  bool gameStarted = false;
   static const int minNumOfPlayers = 2;
   static const int maxNumOfPlayers = 5;
 

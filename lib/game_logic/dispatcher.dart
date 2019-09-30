@@ -5,7 +5,6 @@ import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/game_store/hand.dart';
 import 'package:poker_game/game_store/player.dart';
-import 'package:poker_game/middleware/room.dart';
 import 'actions.dart';
 
 class Dispatcher {
@@ -85,6 +84,7 @@ class Dispatcher {
   void _createOfflineGame() {
     _store.offlineGameState = GameState();
     _state = getGameState(_store);
+    _state.gameStarted = true;
   }
 
   void _updateNumberOfPlayers(int newNumofPlayers) {
@@ -107,6 +107,7 @@ class Dispatcher {
   void _startOnlineGame(StartOnlineGameAction action) {
     _shuffleDeck();
     _handOutCardsToPlayers();
+    _state.gameStarted = true;
   }
 
   void _enterRoom(EnterRoomAction action) {

@@ -1,10 +1,15 @@
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
 import 'package:poker_game/game_logic/actions.dart';
+import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/game_store.dart';
+import 'package:poker_game/routes.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux/redux.dart';
 
 import 'firestore_rooms.dart';
 import 'room.dart';
+
+bool inGame = false;
 
 List<Middleware<GameStore>> createStoreMiddleware(
     FirestoreRooms firestoreRooms) {
@@ -22,6 +27,7 @@ List<Middleware<GameStore>> createStoreMiddleware(
       _firestoreUpdateRoom(firestoreRooms),
     ),
     NavigationMiddleware<GameStore>(),
+    thunkMiddleware
   ];
 }
 
@@ -36,6 +42,12 @@ void Function(
       NextDispatcher next) {
     firestoreRooms.rooms().listen((List<Room> rooms) {
       store.dispatch(LoadRoomsAction(rooms));
+      if (onlinePlayerIndex != null &&
+          store.state.onlineRooms[store.state.currentOnlineRoom].gameState
+              .gameStarted &&
+          !inGame) {
+        switchToGame(store);
+      }
     });
   };
 }
@@ -78,3 +90,8 @@ void Function(
     firestoreRooms.updateRoom(action.room);
   };
 }
+
+ThunkAction<GameStore> switchToGame = (Store<GameStore> store) async {
+  inGame = true;
+  store.dispatch(NavigateToAction.push(Routes.onlineGame));
+};
