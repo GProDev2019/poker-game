@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
+import 'package:poker_game/game_logic/actions.dart';
 import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/game_store/card_info.dart';
 import 'package:poker_game/game_store/game_store.dart';
-import 'package:redux/redux.dart';
-
-import 'package:poker_game/game_logic/actions.dart';
 import 'package:poker_game/game_store/hand.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/routes.dart';
 
-class OfflineGamePage extends StatelessWidget {
+import 'package:redux/redux.dart';
+
+class GamePage extends StatelessWidget {
   static const Key replaceCardsButtonKey = Key('REPLACE_CARDS_BUTTON_KEY');
   static const Key cardsKey = Key('CARDS_KEY_');
   static const Key endTurnButtonKey = Key('END_TURN_BUTTON_KEY');
@@ -97,21 +97,43 @@ class _ViewModel {
       : pageTitle = 'Player $currentPlayer';
 
   factory _ViewModel.create(Store<GameStore> store) {
-    final int currentPlayer =
-        Dispatcher.getGameState(store.state).currentPlayerIndex;
+    final int currentPlayer = Dispatcher.getCurrentPlayer(store.state);
     final bool replacedCards = Dispatcher.getGameState(store.state)
         .players[currentPlayer]
         .replacedCards;
-    return _ViewModel(currentPlayer,
-        replacedCards ? null : () => store.dispatch(ReplaceCardsAction()), () {
-      store.dispatch(EndTurnAction());
-      if (Dispatcher.getGameState(store.state).gameEnded) {
-        store.dispatch(NavigateToAction.replace(Routes.results));
-      }
-    }, (PlayingCard card) => store.dispatch(ToggleSelectedCardAction(card)),
-        Dispatcher.getGameState(store.state).players[currentPlayer].hand);
-  }
 
+    return _ViewModel(
+        currentPlayer,
+        replacedCards
+            ? null
+            : () {
+                store.dispatch(ReplaceCardsAction());
+                if (store.state.localStore.isOnlineGame()) {
+                  store.dispatch(UpdateRoomAction(
+                      Dispatcher.getCurrentOnlineRoom(store.state)));
+                }
+              },
+        store.state.localStore.onlineTurnEnded
+            ? null
+            : () {
+                if (!Dispatcher.getGameState(store.state).gameEnded) {
+                  store.dispatch(EndTurnAction());
+                  if (store.state.localStore.isOnlineGame()) {
+                    store.dispatch(UpdateRoomAction(
+                        Dispatcher.getCurrentOnlineRoom(store.state)));
+                  }
+                }
+                if (Dispatcher.getGameState(store.state).gameEnded) {
+                  store.dispatch(NavigateToAction.replace(Routes.results));
+                }
+              }, (PlayingCard card) {
+      store.dispatch(ToggleSelectedCardAction(card));
+      if (store.state.localStore.isOnlineGame()) {
+        store.dispatch(
+            UpdateRoomAction(Dispatcher.getCurrentOnlineRoom(store.state)));
+      }
+    }, Dispatcher.getGameState(store.state).players[currentPlayer].hand);
+  }
   Color getCardColor(int index) {
     final PlayingCard card = playerCards.cards[index];
     if (<CardColor>[CardColor.diamonds, CardColor.hearts]

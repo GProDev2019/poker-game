@@ -5,6 +5,7 @@ import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/game_store/hand.dart';
 import 'package:poker_game/game_store/player.dart';
+import 'package:poker_game/middleware/room.dart';
 import 'actions.dart';
 
 class Dispatcher {
@@ -62,23 +63,29 @@ class Dispatcher {
   }
 
   static GameState getGameState(GameStore store) {
-    if (onlinePlayerIndex != null) {
-      return store.onlineRooms[store.currentOnlineRoom].gameState;
+    if (store.localStore.isOnlineGame()) {
+      return store.onlineRooms[store.localStore.currentOnlineRoom].gameState;
     } else {
       return store.offlineGameState;
     }
   }
 
-  void _setGameState() {
-    if (_state != null &&
-        _store.currentOnlineRoom != null &&
-        _store.onlineRooms.length > _store.currentOnlineRoom) {
-      _store.onlineRooms[_store.currentOnlineRoom].gameState = _state;
-    }
+  static int getCurrentPlayer(GameStore store) {
+    return store.localStore.onlinePlayerIndex ??
+        store.offlineGameState.currentPlayerIndex;
   }
 
-  int _getCurrentPlayer() {
-    return onlinePlayerIndex ?? _state.currentPlayerIndex;
+  static Room getCurrentOnlineRoom(GameStore store) {
+    return store.onlineRooms[store.localStore.currentOnlineRoom];
+  }
+
+  void _setGameState() {
+    if (_state != null &&
+        _store.localStore.currentOnlineRoom != null &&
+        _store.onlineRooms.length > _store.localStore.currentOnlineRoom) {
+      _store.onlineRooms[_store.localStore.currentOnlineRoom].gameState =
+          _state;
+    }
   }
 
   void _createOfflineGame() {
@@ -111,19 +118,24 @@ class Dispatcher {
   }
 
   void _enterRoom(EnterRoomAction action) {
-    _store.currentOnlineRoom = action.roomId;
-    onlinePlayerIndex =
-        _store.onlineRooms[_store.currentOnlineRoom].gameState.players.length;
+    _store.localStore.currentOnlineRoom = action.roomId;
+    _store.localStore.onlinePlayerIndex = _store
+        .onlineRooms[_store.localStore.currentOnlineRoom]
+        .gameState
+        .players
+        .length;
     _state = getGameState(_store);
     _state.numOfPlayers++;
-    _state.players.add(Player(onlinePlayerIndex));
+    _state.players.add(Player(_store.localStore.onlinePlayerIndex));
+    _store.localStore.waitingInRoom = true;
   }
 
   void _exitRoom() {
     _state.players.removeWhere((Player player) {
-      return player.playerIndex == onlinePlayerIndex;
+      return player.playerIndex == _store.localStore.onlinePlayerIndex;
     });
     _state.numOfPlayers--;
+    _store.localStore.waitingInRoom = false;
   }
 
   void _handOutCardsToPlayers() {
@@ -173,7 +185,7 @@ class Dispatcher {
   }
 
   void _toggleCard(ToggleSelectedCardAction action) {
-    _state.players[_getCurrentPlayer()].hand.cards
+    _state.players[getCurrentPlayer(_store)].hand.cards
         .firstWhere((PlayingCard card) =>
             card.color == action.selectedCard.color &&
             card.rank == action.selectedCard.rank)
@@ -181,7 +193,7 @@ class Dispatcher {
   }
 
   void _replaceCards() {
-    final int playerIndex = _getCurrentPlayer();
+    final int playerIndex = getCurrentPlayer(_store);
     final int numOfCardsToReplace = _state.players[playerIndex].hand.cards
         .where((PlayingCard card) => card.selectedForReplace)
         .length;
@@ -199,8 +211,10 @@ class Dispatcher {
       if (_state.numOfPlayersEndTurns == _state.players.length - 1) {
         _endGame();
       } else {
-        if (onlinePlayerIndex == null) {
-          _state.currentPlayerIndex += 1; // offline game
+        if (_store.localStore.isOnlineGame()) {
+          _store.localStore.onlineTurnEnded = true;
+        } else {
+          _state.currentPlayerIndex += 1;
         }
         _state.numOfPlayersEndTurns++;
       }

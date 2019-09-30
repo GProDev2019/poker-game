@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:poker_game/screens/offline_game_page.dart';
-import 'package:poker_game/screens/online_game_page.dart';
+import 'package:poker_game/screens/game_page.dart';
 import 'package:poker_game/screens/results_page.dart';
 import 'package:poker_game/screens/room_page.dart';
 import 'package:poker_game/screens/rooms_page.dart';
@@ -8,10 +7,9 @@ import 'package:poker_game/screens/start.dart';
 
 class Routes {
   static const String mainMenu = '/';
-  static const String offlineGame = '/offlineGame';
+  static const String game = '/game';
   static const String rooms = '/rooms';
   static const String room = '/room';
-  static const String onlineGame = '/onlineGame';
   static const String results = '/results';
 
   static MaterialPageRoute<dynamic> getRoute(RouteSettings settings) {
@@ -22,9 +20,9 @@ class Routes {
           settings: settings,
         );
         break;
-      case offlineGame:
+      case game:
         return MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => OfflineGamePage(),
+          builder: (BuildContext context) => GamePage(),
           settings: settings,
         );
         break;
@@ -37,12 +35,6 @@ class Routes {
       case room:
         return MaterialPageRoute<dynamic>(
           builder: (BuildContext context) => RoomPage(),
-          settings: settings,
-        );
-        break;
-      case onlineGame:
-        return MaterialPageRoute<dynamic>(
-          builder: (BuildContext context) => OnlineGamePage(),
           settings: settings,
         );
         break;
