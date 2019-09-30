@@ -22,76 +22,73 @@ class StartPage extends StatelessWidget {
           body: _createWidget(context, viewModel)));
 
   Widget _createWidget(BuildContext context, _ViewModel viewModel) {
-    if (!viewModel.isGameStarted) {
-      return Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              FlatButton(
-                key: offlineButtonKey,
-                color: Colors.green,
-                child: const Text('PLAY OFFLINE'),
-                onPressed: () {
-                  if (viewModel.canBeStarted) {
-                    viewModel.onPlayOffline(viewModel.numOfPlayers);
+    return Center(
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            FlatButton(
+              key: offlineButtonKey,
+              color: Colors.green,
+              child: const Text('PLAY OFFLINE'),
+              onPressed: () {
+                if (viewModel.canBeStarted) {
+                  viewModel.onPlayOffline(viewModel.numOfPlayers);
+                }
+              },
+            ),
+            FlatButton(
+              color: Colors.green,
+              child: const Text('PLAY ONLINE'),
+              onPressed: () {
+                if (viewModel.canBeStarted) {
+                  viewModel.onPlayOnline();
+                }
+              },
+            ),
+            const Text('Number of players: '),
+            Container(
+              padding: const EdgeInsets.only(left: 50), // ToDo: Fix this
+              child: Center(
+                  child: TextFormField(
+                expands: false,
+                initialValue: '2',
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    border: InputBorder.none,
+                    hintText: 'Number of players'),
+                onChanged: (String numOfPlayersText) =>
+                    viewModel.numOfPlayers = int.tryParse(numOfPlayersText),
+                autovalidate: true,
+                validator: (String numOfPlayersText) {
+                  final int numOfPlayers = int.tryParse(numOfPlayersText);
+                  if (numOfPlayers == null ||
+                      numOfPlayers < GameState.minNumOfPlayers ||
+                      GameState.maxNumOfPlayers < numOfPlayers) {
+                    viewModel.canBeStarted = false;
+                    return 'Number of players should be between 2 and 5!';
                   }
+                  viewModel.canBeStarted = true;
+                  return null;
                 },
-              ),
-              FlatButton(
-                color: Colors.green,
-                child: const Text('PLAY ONLINE'),
-                onPressed: () {
-                  if (viewModel.canBeStarted) {
-                    viewModel.onPlayOnline();
-                  }
-                },
-              ),
-              const Text('Number of players: '),
-              Container(
-                padding: const EdgeInsets.only(left: 50), // ToDo: Fix this
-                child: Center(
-                    child: TextFormField(
-                  expands: false,
-                  initialValue: '2',
-                  decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      border: InputBorder.none,
-                      hintText: 'Number of players'),
-                  onChanged: (String numOfPlayersText) =>
-                      viewModel.numOfPlayers = int.parse(numOfPlayersText),
-                  autovalidate: true,
-                  validator: (String numOfPlayersText) {
-                    final int numOfPlayers = int.parse(numOfPlayersText);
-                    if (numOfPlayers < GameState.minNumOfPlayers ||
-                        GameState.maxNumOfPlayers < numOfPlayers) {
-                      viewModel.canBeStarted = false;
-                      return 'Number of players should be between 2 and 5!';
-                    }
-                    viewModel.canBeStarted = true;
-                    return null;
-                  },
-                )),
-              ),
-            ]),
-      );
-    }
-    return Container(width: 0, height: 0);
+              )),
+            ),
+          ]),
+    );
   }
 }
 
 class _ViewModel {
   final String pageTitle;
-  final bool isGameStarted; // ToDo: Probably not needed
   bool canBeStarted = true;
   int numOfPlayers = GameState.minNumOfPlayers;
   final Function(int numOfPlayers) onPlayOffline;
   final Function() onPlayOnline;
 
-  _ViewModel(this.pageTitle, this.isGameStarted, this.onPlayOffline,
-      this.onPlayOnline);
+  _ViewModel(this.pageTitle, this.onPlayOffline, this.onPlayOnline);
 
   factory _ViewModel.create(Store<GameStore> store) {
-    return _ViewModel('Main menu', false, (int numOfPlayers) {
+    return _ViewModel('Main menu', (int numOfPlayers) {
       store.dispatch(StartOfflineGameAction(numOfPlayers));
       store.dispatch(NavigateToAction.push(Routes.offlineGame));
     }, () {

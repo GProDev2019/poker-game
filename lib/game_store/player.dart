@@ -5,8 +5,6 @@ import 'hand.dart';
 
 part 'player.g.dart';
 
-int onlinePlayerIndex = -1;
-
 @JsonSerializable()
 class Player implements Comparable<Player> {
   Hand hand;

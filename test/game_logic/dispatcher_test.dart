@@ -81,7 +81,7 @@ void main() {
               .cards[card1IndexToReplace],
           false);
       const int player2Index = 1;
-      dispatcherTester.store.offlineGameState.currentPlayer = player2Index;
+      dispatcherTester.store.offlineGameState.currentPlayerIndex = player2Index;
       const int card2IndexToReplace = 2;
       dispatcherTester.testTogglingCard(
           player2Index,
