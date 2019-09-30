@@ -5,8 +5,6 @@ import 'package:poker_game/game_logic/actions.dart';
 import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/game_store.dart';
-import 'package:poker_game/game_store/hand.dart';
-import 'package:poker_game/game_store/player.dart';
 import 'package:poker_game/middleware/room.dart';
 import 'package:poker_game/routes.dart';
 import 'package:redux/redux.dart';
@@ -45,7 +43,7 @@ class RoomPage extends StatelessWidget {
         const Padding(padding: EdgeInsets.all(7.0)),
         FlatButton(
           color: Colors.green,
-          child: Text(viewModel.startGameButtonText),
+          child: const Text('Start game'),
           onPressed: viewModel.onStartGame,
         ),
         const Padding(padding: EdgeInsets.all(7.0)),
@@ -53,7 +51,30 @@ class RoomPage extends StatelessWidget {
           color: Colors.red,
           child: const Text('Back to rooms'),
           onPressed: viewModel.onBackToRooms,
-        )
+        ),
+        if (viewModel.minimumNumOfPlayersReached)
+          Container(color: Colors.white)
+        else
+          buildWrongNumOfPlayersWindow()
+      ],
+    );
+  }
+
+  Widget buildWrongNumOfPlayersWindow() {
+    return Column(
+      children: <Widget>[
+        const Padding(padding: EdgeInsets.only(top: 20)),
+        Container(
+          height: 65,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.0),
+            color: Colors.red,
+          ),
+          child: Center(
+            child: const Padding(
+                padding: EdgeInsets.all(8.0), child: Text('Za mało graczy!')),
+          ),
+        ),
       ],
     );
   }
@@ -63,53 +84,32 @@ class _ViewModel {
   final Room room;
   final Function() onStartGame;
   final Function() onBackToRooms;
-  final String startGameButtonText;
+  final bool minimumNumOfPlayersReached;
 
   _ViewModel(this.room, this.onStartGame, this.onBackToRooms,
-      this.startGameButtonText);
+      this.minimumNumOfPlayersReached);
 
   factory _ViewModel.create(Store<GameStore> store) {
-    // ToDo: Do it prettier
-    String startGameButtonText = 'Start game';
-    if (onlinePlayerIndex != -1 &&
-        Dispatcher.getGameState(store.state)
-                .players[onlinePlayerIndex]
-                .hand
-                .cards
-                .length ==
-            Hand.maxNumOfCards) {
-      startGameButtonText = 'Join game';
+    bool minimumNumOfPlayersReached = false;
+    final int numOfPlayers =
+        Dispatcher.getGameState(store.state).players.length;
+    if (GameState.minNumOfPlayers <= numOfPlayers &&
+        numOfPlayers <= GameState.maxNumOfPlayers) {
+      minimumNumOfPlayersReached = true;
     }
-
     return _ViewModel(store.state.onlineRooms[store.state.currentOnlineRoom],
         () {
-      if (onlinePlayerIndex != -1 &&
-          Dispatcher.getGameState(store.state)
-                  .players[onlinePlayerIndex]
-                  .hand
-                  .cards
-                  .length ==
-              Hand.maxNumOfCards) {
-        store.dispatch(NavigateToAction.push(
-            Routes.onlineGame)); // Join online game if someone else run it
-      } else {
-        final int numOfPlayers =
-            Dispatcher.getGameState(store.state).players.length;
-        if (GameState.minNumOfPlayers <= numOfPlayers &&
-            numOfPlayers <= GameState.maxNumOfPlayers) {
-          store.dispatch(StartOnlineGameAction(numOfPlayers));
-          store.dispatch(UpdateRoomAction(
-              store.state.onlineRooms[store.state.currentOnlineRoom]));
-          store.dispatch(NavigateToAction.push(Routes.onlineGame));
-        } else {
-          // ToDo: Show error
-        }
+      if (minimumNumOfPlayersReached) {
+        store.dispatch(StartOnlineGameAction(numOfPlayers));
+        store.dispatch(UpdateRoomAction(
+            store.state.onlineRooms[store.state.currentOnlineRoom]));
+        store.dispatch(NavigateToAction.push(Routes.onlineGame));
       }
     }, () {
       store.dispatch(ExitRoomAction());
       store.dispatch(UpdateRoomAction(
           store.state.onlineRooms[store.state.currentOnlineRoom]));
       store.dispatch(NavigateToAction.pop());
-    }, startGameButtonText);
+    }, minimumNumOfPlayersReached);
   }
 }

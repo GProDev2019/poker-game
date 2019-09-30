@@ -8,18 +8,18 @@ part of 'game_store.dart';
 
 GameStore _$GameStoreFromJson(Map<String, dynamic> json) {
   return GameStore()
-    ..offlineGameState = json['gameState'] == null
+    ..offlineGameState = json['offlineGameState'] == null
         ? null
-        : GameState.fromJson(json['gameState'] as Map<String, dynamic>)
-    ..onlineRooms = (json['rooms'] as List)
+        : GameState.fromJson(json['offlineGameState'] as Map<String, dynamic>)
+    ..onlineRooms = (json['onlineRooms'] as List)
         ?.map(
             (e) => e == null ? null : Room.fromJson(e as Map<String, dynamic>))
         ?.toList()
-    ..currentOnlineRoom = json['currentRoom'] as int;
+    ..currentOnlineRoom = json['currentOnlineRoom'] as int;
 }
 
 Map<String, dynamic> _$GameStoreToJson(GameStore instance) => <String, dynamic>{
-      'gameState': instance.offlineGameState,
-      'rooms': instance.onlineRooms,
-      'currentRoom': instance.currentOnlineRoom,
+      'offlineGameState': instance.offlineGameState,
+      'onlineRooms': instance.onlineRooms,
+      'currentOnlineRoom': instance.currentOnlineRoom,
     };
