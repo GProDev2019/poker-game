@@ -5,6 +5,7 @@ import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/game_store/hand.dart';
 import 'package:poker_game/game_store/player.dart';
+import 'package:poker_game/middleware/room.dart';
 import 'actions.dart';
 
 class Dispatcher {
@@ -62,11 +63,20 @@ class Dispatcher {
   }
 
   static GameState getGameState(GameStore store) {
-    if (store.localStore.onlinePlayerIndex != null) {
+    if (store.localStore.isOnlineGame()) {
       return store.onlineRooms[store.localStore.currentOnlineRoom].gameState;
     } else {
       return store.offlineGameState;
     }
+  }
+
+  static int getCurrentPlayer(GameStore store) {
+    return store.localStore.onlinePlayerIndex ??
+        store.offlineGameState.currentPlayerIndex;
+  }
+
+  static Room getCurrentOnlineRoom(GameStore store) {
+    return store.onlineRooms[store.localStore.currentOnlineRoom];
   }
 
   void _setGameState() {
@@ -76,10 +86,6 @@ class Dispatcher {
       _store.onlineRooms[_store.localStore.currentOnlineRoom].gameState =
           _state;
     }
-  }
-
-  int _getCurrentPlayer() {
-    return _store.localStore.onlinePlayerIndex ?? _state.currentPlayerIndex;
   }
 
   void _createOfflineGame() {
@@ -179,7 +185,7 @@ class Dispatcher {
   }
 
   void _toggleCard(ToggleSelectedCardAction action) {
-    _state.players[_getCurrentPlayer()].hand.cards
+    _state.players[getCurrentPlayer(_store)].hand.cards
         .firstWhere((PlayingCard card) =>
             card.color == action.selectedCard.color &&
             card.rank == action.selectedCard.rank)
@@ -187,7 +193,7 @@ class Dispatcher {
   }
 
   void _replaceCards() {
-    final int playerIndex = _getCurrentPlayer();
+    final int playerIndex = getCurrentPlayer(_store);
     final int numOfCardsToReplace = _state.players[playerIndex].hand.cards
         .where((PlayingCard card) => card.selectedForReplace)
         .length;
@@ -205,10 +211,10 @@ class Dispatcher {
       if (_state.numOfPlayersEndTurns == _state.players.length - 1) {
         _endGame();
       } else {
-        if (_store.localStore.onlinePlayerIndex == null) {
-          _state.currentPlayerIndex += 1; // offline game
-        } else {
+        if (_store.localStore.isOnlineGame()) {
           _store.localStore.onlineTurnEnded = true;
+        } else {
+          _state.currentPlayerIndex += 1;
         }
         _state.numOfPlayersEndTurns++;
       }

@@ -10,7 +10,7 @@ import 'package:poker_game/routes.dart';
 
 class StartPage extends StatelessWidget {
   static const Key offlineButtonKey = Key('OFFLINE_BUTTON_KEY');
-  static const Key passwordInputFieldKey = Key('PASSWORD_INPUT_FIELD_KEY');
+  static const Key numOfPlayersInputFieldKey = Key('PASSWORD_INPUT_FIELD_KEY');
 
   @override
   Widget build(BuildContext context) => StoreConnector<GameStore, _ViewModel>(
@@ -50,6 +50,7 @@ class StartPage extends StatelessWidget {
               padding: const EdgeInsets.only(left: 50), // ToDo: Fix this
               child: Center(
                   child: TextFormField(
+                key: numOfPlayersInputFieldKey,
                 expands: false,
                 initialValue: '2',
                 keyboardType: TextInputType.number,
@@ -90,7 +91,7 @@ class _ViewModel {
   factory _ViewModel.create(Store<GameStore> store) {
     return _ViewModel('Main menu', (int numOfPlayers) {
       store.dispatch(StartOfflineGameAction(numOfPlayers));
-      store.dispatch(NavigateToAction.push(Routes.offlineGame));
+      store.dispatch(NavigateToAction.push(Routes.game));
     }, () {
       store.dispatch(NavigateToAction.push(Routes.rooms));
     });

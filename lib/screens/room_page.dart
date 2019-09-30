@@ -98,17 +98,20 @@ class _ViewModel {
       minimumNumOfPlayersReached = true;
     }
     return _ViewModel(
-        store.state.onlineRooms[store.state.localStore.currentOnlineRoom], () {
-      if (minimumNumOfPlayersReached) {
-        store.dispatch(StartOnlineGameAction(numOfPlayers));
-        store.dispatch(UpdateRoomAction(
-            store.state.onlineRooms[store.state.localStore.currentOnlineRoom]));
-        store.dispatch(NavigateToAction.push(Routes.onlineGame));
-      }
-    }, () {
+        Dispatcher.getCurrentOnlineRoom(store.state),
+        !minimumNumOfPlayersReached
+            ? null
+            : () {
+                if (minimumNumOfPlayersReached) {
+                  store.dispatch(StartOnlineGameAction(numOfPlayers));
+                  store.dispatch(UpdateRoomAction(
+                      Dispatcher.getCurrentOnlineRoom(store.state)));
+                  store.dispatch(NavigateToAction.push(Routes.game));
+                }
+              }, () {
       store.dispatch(ExitRoomAction());
-      store.dispatch(UpdateRoomAction(
-          store.state.onlineRooms[store.state.localStore.currentOnlineRoom]));
+      store.dispatch(
+          UpdateRoomAction(Dispatcher.getCurrentOnlineRoom(store.state)));
       store.dispatch(NavigateToAction.pop());
     }, minimumNumOfPlayersReached);
   }

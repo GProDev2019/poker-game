@@ -1,5 +1,6 @@
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
 import 'package:poker_game/game_logic/actions.dart';
+import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/routes.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -39,15 +40,13 @@ void Function(
       NextDispatcher next) {
     firestoreRooms.rooms().listen((List<Room> rooms) {
       store.dispatch(LoadRoomsAction(rooms));
-      if (store.state.localStore.onlinePlayerIndex != null &&
-          store.state.onlineRooms[store.state.localStore.currentOnlineRoom]
-              .gameState.gameStarted &&
+      if (store.state.localStore.isOnlineGame() &&
+          Dispatcher.getGameState(store.state).gameStarted &&
           store.state.localStore.waitingInRoom) {
         switchToGame(store);
       }
-      if (store.state.localStore.onlinePlayerIndex != null &&
-          store.state.onlineRooms[store.state.localStore.currentOnlineRoom]
-              .gameState.gameEnded &&
+      if (store.state.localStore.isOnlineGame() &&
+          Dispatcher.getGameState(store.state).gameEnded &&
           store.state.localStore.onlineTurnEnded) {
         switchToResults(store);
       }
@@ -96,7 +95,7 @@ void Function(
 
 ThunkAction<GameStore> switchToGame = (Store<GameStore> store) async {
   store.state.localStore.waitingInRoom = false;
-  store.dispatch(NavigateToAction.push(Routes.onlineGame));
+  store.dispatch(NavigateToAction.push(Routes.game));
 };
 
 ThunkAction<GameStore> switchToResults = (Store<GameStore> store) async {
