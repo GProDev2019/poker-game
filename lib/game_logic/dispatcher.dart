@@ -1,5 +1,5 @@
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
-import 'package:poker_game/game_logic/hand_strength.dart';
+import 'package:poker_game/game_logic/hand_strength_checker.dart';
 import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/game_store/playing_card.dart';

@@ -1,5 +1,6 @@
 import 'package:poker_game/game_logic/hand_name.dart';
 import 'package:poker_game/game_logic/hand_strength.dart';
+import 'package:poker_game/game_logic/hand_strength_checker.dart';
 import 'package:poker_game/game_store/card_info.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:test/test.dart';
