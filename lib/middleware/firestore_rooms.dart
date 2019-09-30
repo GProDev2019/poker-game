@@ -23,8 +23,8 @@ class FirestoreRooms {
         .setData(jsonDecode(jsonEncode(room)), merge: true);
   }
 
-  Future<void> deleteRoom(String id) async {
-    return firestore.collection(path).document(id).delete();
+  Future<void> deleteRoom(String roomId) async {
+    return firestore.collection(path).document(roomId).delete();
   }
 
   Stream<List<Room>> rooms() {

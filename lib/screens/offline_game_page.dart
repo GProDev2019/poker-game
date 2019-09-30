@@ -98,7 +98,7 @@ class _ViewModel {
 
   factory _ViewModel.create(Store<GameStore> store) {
     final int currentPlayer =
-        Dispatcher.getGameState(store.state).currentPlayer;
+        Dispatcher.getGameState(store.state).currentPlayerIndex;
     final bool replacedCards = Dispatcher.getGameState(store.state)
         .players[currentPlayer]
         .replacedCards;

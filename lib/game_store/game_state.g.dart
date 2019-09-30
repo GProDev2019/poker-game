@@ -15,7 +15,7 @@ GameState _$GameStateFromJson(Map<String, dynamic> json) {
         ?.map((e) =>
             e == null ? null : Player.fromJson(e as Map<String, dynamic>))
         ?.toList()
-    ..currentPlayer = json['currentPlayer'] as int
+    ..currentPlayerIndex = json['currentPlayer'] as int
     ..numOfPlayers = json['numOfPlayers'] as int
     ..numOfPlayersEndTurns = json['numOfPlayersEndTurns'] as int
     ..handOutStrategy =
@@ -26,7 +26,7 @@ GameState _$GameStateFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$GameStateToJson(GameState instance) => <String, dynamic>{
       'deck': instance.deck,
       'players': instance.players,
-      'currentPlayer': instance.currentPlayer,
+      'currentPlayer': instance.currentPlayerIndex,
       'numOfPlayers': instance.numOfPlayers,
       'numOfPlayersEndTurns': instance.numOfPlayersEndTurns,
       'handOutStrategy': _$HandOutStrategyEnumMap[instance.handOutStrategy],

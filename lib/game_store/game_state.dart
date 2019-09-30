@@ -6,11 +6,13 @@ part 'game_state.g.dart';
 
 enum HandOutStrategy { oneByOneCard, allCardsAtOnce }
 
+int onlinePlayerIndex;
+
 @JsonSerializable()
 class GameState {
   Deck deck = Deck.initial();
   List<Player> players = <Player>[];
-  int currentPlayer = 0;
+  int currentPlayerIndex = 0;
   int numOfPlayers = 0;
   int numOfPlayersEndTurns = 0;
   HandOutStrategy handOutStrategy = HandOutStrategy.oneByOneCard;

@@ -3,8 +3,8 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
 import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/game_store/card_info.dart';
+import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/game_store.dart';
-import 'package:poker_game/game_store/player.dart';
 import 'package:redux/redux.dart';
 
 import 'package:poker_game/game_logic/actions.dart';
@@ -102,20 +102,20 @@ class _ViewModel {
             : () {
                 store.dispatch(ReplaceCardsAction());
                 store.dispatch(UpdateRoomAction(
-                    store.state.rooms[store.state.currentRoom]));
+                    store.state.onlineRooms[store.state.currentOnlineRoom]));
               }, () {
       if (!Dispatcher.getGameState(store.state).gameEnded) {
         store.dispatch(EndTurnAction());
-        store.dispatch(
-            UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
+        store.dispatch(UpdateRoomAction(
+            store.state.onlineRooms[store.state.currentOnlineRoom]));
       }
       if (Dispatcher.getGameState(store.state).gameEnded) {
         store.dispatch(NavigateToAction.replace(Routes.results));
       }
     }, (PlayingCard card) {
       store.dispatch(ToggleSelectedCardAction(card));
-      store.dispatch(
-          UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
+      store.dispatch(UpdateRoomAction(
+          store.state.onlineRooms[store.state.currentOnlineRoom]));
     }, Dispatcher.getGameState(store.state).players[onlinePlayerIndex].hand);
   }
 

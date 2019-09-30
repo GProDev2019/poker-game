@@ -14,22 +14,22 @@ class Dispatcher {
   GameState _state;
 
   GameStore dispatchPokerGameAction(GameStore store, dynamic action) {
+    // Actions that doesn't change game state
+    switch (action.runtimeType) {
+      case LoadRoomsAction:
+        return _loadRooms(store, action);
+      case NavigateToAction:
+        return store;
+    }
+    // Actions that change game state
     _store = store;
     _state = getGameState(_store);
     switch (action.runtimeType) {
-      case NavigateToAction:
-        return _store;
       case StartOfflineGameAction:
         _startOfflineGame(action);
         break;
       case StartOnlineGameAction:
         _startOnlineGame(action);
-        break;
-      case LoadRoomsAction:
-        _loadRooms(action);
-        return _store; // ToDo: Do it prettier (for e.g. create abstract class for actions that _setGameState() should be called on the end)
-      case ClearRoomsAction:
-        _clearRooms();
         break;
       case EnterRoomAction:
         _enterRoom(action);
@@ -56,35 +56,34 @@ class Dispatcher {
     return _store;
   }
 
+  GameStore _loadRooms(GameStore store, LoadRoomsAction action) {
+    store.onlineRooms.clear();
+    store.onlineRooms.insertAll(0, action.rooms);
+    return store;
+  }
+
   static GameState getGameState(GameStore store) {
-    if (store.rooms.isEmpty ||
-        store.currentRoom == null ||
-        store.rooms.length <= store.currentRoom) {
-      return null;
+    if (onlinePlayerIndex != null) {
+      return store.onlineRooms[store.currentOnlineRoom].gameState;
+    } else {
+      return store.offlineGameState;
     }
-    return store.rooms[store.currentRoom].gameState;
   }
 
   void _setGameState() {
     if (_state != null &&
-        _store.currentRoom != null &&
-        _store.rooms.length > _store.currentRoom) {
-      _store.rooms[_store.currentRoom].gameState = _state;
+        _store.currentOnlineRoom != null &&
+        _store.onlineRooms.length > _store.currentOnlineRoom) {
+      _store.onlineRooms[_store.currentOnlineRoom].gameState = _state;
     }
   }
 
   int _getCurrentPlayer() {
-    // ToDo: Refactor this
-    if (onlinePlayerIndex == -1) {
-      return _state.currentPlayer;
-    } else {
-      return onlinePlayerIndex;
-    }
+    return onlinePlayerIndex ?? _state.currentPlayerIndex;
   }
 
-  void _createLocalRoom(String roomTitle) {
-    _store.rooms.insert(Room.offlineGameRoomId, Room(roomTitle, GameState()));
-    _store.currentRoom = Room.offlineGameRoomId;
+  void _createOfflineGame() {
+    _store.offlineGameState = GameState();
     _state = getGameState(_store);
   }
 
@@ -99,40 +98,31 @@ class Dispatcher {
   }
 
   void _startOfflineGame(StartOfflineGameAction action) {
-    _createLocalRoom('Local');
+    _createOfflineGame();
     _updateNumberOfPlayers(action.numOfPlayers);
     _shuffleDeck();
     _handOutCardsToPlayers();
   }
 
   void _startOnlineGame(StartOnlineGameAction action) {
-    //_updateNumberOfPlayers(action.numOfPlayers);
     _shuffleDeck();
     _handOutCardsToPlayers();
   }
 
-  void _loadRooms(LoadRoomsAction action) {
-    _clearRooms();
-    _store.rooms.insertAll(1, action.rooms);
-  }
-
-  void _clearRooms() {
-    _store.rooms.removeRange(1, _store.rooms.length);
-  }
-
   void _enterRoom(EnterRoomAction action) {
-    _store.currentRoom = action.roomId;
+    _store.currentOnlineRoom = action.roomId;
+    onlinePlayerIndex =
+        _store.onlineRooms[_store.currentOnlineRoom].gameState.players.length;
     _state = getGameState(_store);
     _state.numOfPlayers++;
-    onlinePlayerIndex = _state.players.length; // ToDo: Do it prettier
     _state.players.add(Player(onlinePlayerIndex));
   }
 
   void _exitRoom() {
     _state.players.removeWhere((Player player) {
-      _state.numOfPlayers--;
       return player.playerIndex == onlinePlayerIndex;
     });
+    _state.numOfPlayers--;
   }
 
   void _handOutCardsToPlayers() {
@@ -190,17 +180,17 @@ class Dispatcher {
   }
 
   void _replaceCards() {
-    final int numOfCardsToReplace = _state
-        .players[_getCurrentPlayer()].hand.cards
+    final int playerIndex = _getCurrentPlayer();
+    final int numOfCardsToReplace = _state.players[playerIndex].hand.cards
         .where((PlayingCard card) => card.selectedForReplace)
         .length;
-    _state.players[_getCurrentPlayer()].hand.cards
+    _state.players[playerIndex].hand.cards
         .removeWhere((PlayingCard card) => card.selectedForReplace);
     for (int cardNum = 0; cardNum < numOfCardsToReplace; cardNum++) {
-      _handOutCardToPlayer(_getCurrentPlayer());
+      _handOutCardToPlayer(playerIndex);
     }
-    _sortPlayerCards(_getCurrentPlayer());
-    _state.players[_getCurrentPlayer()].replacedCards = true;
+    _sortPlayerCards(playerIndex);
+    _state.players[playerIndex].replacedCards = true;
   }
 
   void _endTurn() {
@@ -208,9 +198,8 @@ class Dispatcher {
       if (_state.numOfPlayersEndTurns == _state.players.length - 1) {
         _endGame();
       } else {
-        if (_store.currentRoom == 0) {
-          // ToDo: Maybe do it prettier (maybe some additional flag to indicate offline game)
-          _state.currentPlayer += 1; // offline game
+        if (onlinePlayerIndex == null) {
+          _state.currentPlayerIndex += 1; // offline game
         }
         _state.numOfPlayersEndTurns++;
       }

@@ -24,8 +24,6 @@ class StartOnlineGameAction {
 
 class DownloadRoomsAction {}
 
-class ClearRoomsAction {}
-
 class EnterRoomAction {
   final int roomId;
   EnterRoomAction(this.roomId);
@@ -40,18 +38,15 @@ class UpdateRoomAction {
 
 class LoadRoomsAction {
   final List<Room> rooms;
-
   LoadRoomsAction(this.rooms);
 }
 
 class CreateRoomAction {
   final Room room;
-
   CreateRoomAction(this.room);
 }
 
 class DeleteRooomAction {
-  final String id;
-
-  DeleteRooomAction(this.id);
+  final String roomId;
+  DeleteRooomAction(this.roomId);
 }
