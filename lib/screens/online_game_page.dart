@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
+import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/game_store/card_info.dart';
 import 'package:poker_game/game_store/game_store.dart';
+import 'package:poker_game/game_store/player.dart';
 import 'package:redux/redux.dart';
 
 import 'package:poker_game/game_logic/actions.dart';
@@ -90,11 +92,11 @@ class _ViewModel {
       : pageTitle = 'Player $currentPlayer';
 
   factory _ViewModel.create(Store<GameStore> store) {
-    final int currentPlayer = store.state.gameState.currentPlayer;
-    final bool replacedCards =
-        store.state.gameState.players[currentPlayer].replacedCards;
+    final bool replacedCards = Dispatcher.getGameState(store.state)
+        .players[onlinePlayerIndex]
+        .replacedCards;
     return _ViewModel(
-        currentPlayer,
+        onlinePlayerIndex,
         replacedCards
             ? null
             : () {
@@ -102,17 +104,19 @@ class _ViewModel {
                 store.dispatch(UpdateRoomAction(
                     store.state.rooms[store.state.currentRoom]));
               }, () {
-      store.dispatch(EndTurnAction());
-      store.dispatch(
-          UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
-      if (store.state.gameState.gameEnded) {
+      if (!Dispatcher.getGameState(store.state).gameEnded) {
+        store.dispatch(EndTurnAction());
+        store.dispatch(
+            UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
+      }
+      if (Dispatcher.getGameState(store.state).gameEnded) {
         store.dispatch(NavigateToAction.replace(Routes.results));
       }
     }, (PlayingCard card) {
       store.dispatch(ToggleSelectedCardAction(card));
       store.dispatch(
           UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
-    }, store.state.gameState.players[currentPlayer].hand);
+    }, Dispatcher.getGameState(store.state).players[onlinePlayerIndex].hand);
   }
 
   Color getCardColor(int index) {

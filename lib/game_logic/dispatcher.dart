@@ -1,4 +1,5 @@
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
+import 'package:poker_game/game_logic/hand_strength.dart';
 import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/game_store/playing_card.dart';
@@ -6,7 +7,6 @@ import 'package:poker_game/game_store/hand.dart';
 import 'package:poker_game/game_store/player.dart';
 import 'package:poker_game/middleware/room.dart';
 import 'actions.dart';
-import 'hand_names.dart';
 
 class Dispatcher {
   final HandStrengthChecker _handStrengthChecker = HandStrengthChecker();
@@ -18,7 +18,7 @@ class Dispatcher {
     _state = getGameState(_store);
     switch (action.runtimeType) {
       case NavigateToAction:
-        break;
+        return _store;
       case StartOfflineGameAction:
         _startOfflineGame(action);
         break;
@@ -27,6 +27,9 @@ class Dispatcher {
         break;
       case LoadRoomsAction:
         _loadRooms(action);
+        return _store; // ToDo: Do it prettier (for e.g. create abstract class for actions that _setGameState() should be called on the end)
+      case ClearRoomsAction:
+        _clearRooms();
         break;
       case EnterRoomAction:
         _enterRoom(action);
@@ -54,14 +57,29 @@ class Dispatcher {
   }
 
   static GameState getGameState(GameStore store) {
-    if (store.rooms.isEmpty) {
+    if (store.rooms.isEmpty ||
+        store.currentRoom == null ||
+        store.rooms.length <= store.currentRoom) {
       return null;
     }
     return store.rooms[store.currentRoom].gameState;
   }
 
   void _setGameState() {
-    _store.rooms[_store.currentRoom].gameState = _state;
+    if (_state != null &&
+        _store.currentRoom != null &&
+        _store.rooms.length > _store.currentRoom) {
+      _store.rooms[_store.currentRoom].gameState = _state;
+    }
+  }
+
+  int _getCurrentPlayer() {
+    // ToDo: Refactor this
+    if (onlinePlayerIndex == -1) {
+      return _state.currentPlayer;
+    } else {
+      return onlinePlayerIndex;
+    }
   }
 
   void _createLocalRoom(String roomTitle) {
@@ -88,24 +106,32 @@ class Dispatcher {
   }
 
   void _startOnlineGame(StartOnlineGameAction action) {
-    _updateNumberOfPlayers(action.numOfPlayers);
+    //_updateNumberOfPlayers(action.numOfPlayers);
     _shuffleDeck();
     _handOutCardsToPlayers();
   }
 
   void _loadRooms(LoadRoomsAction action) {
-    _store.rooms = action.rooms;
+    _clearRooms();
+    _store.rooms.insertAll(1, action.rooms);
+  }
+
+  void _clearRooms() {
+    _store.rooms.removeRange(1, _store.rooms.length);
   }
 
   void _enterRoom(EnterRoomAction action) {
     _store.currentRoom = action.roomId;
-    _state.currentPlayer = _state.players.length;
-    _state.players.add(Player(_state.currentPlayer));
+    _state = getGameState(_store);
+    _state.numOfPlayers++;
+    onlinePlayerIndex = _state.players.length; // ToDo: Do it prettier
+    _state.players.add(Player(onlinePlayerIndex));
   }
 
   void _exitRoom() {
     _state.players.removeWhere((Player player) {
-      return player.playerIndex == _state.currentPlayer;
+      _state.numOfPlayers--;
+      return player.playerIndex == onlinePlayerIndex;
     });
   }
 
@@ -156,7 +182,7 @@ class Dispatcher {
   }
 
   void _toggleCard(ToggleSelectedCardAction action) {
-    _state.players[_state.currentPlayer].hand.cards
+    _state.players[_getCurrentPlayer()].hand.cards
         .firstWhere((PlayingCard card) =>
             card.color == action.selectedCard.color &&
             card.rank == action.selectedCard.rank)
@@ -165,23 +191,29 @@ class Dispatcher {
 
   void _replaceCards() {
     final int numOfCardsToReplace = _state
-        .players[_state.currentPlayer].hand.cards
+        .players[_getCurrentPlayer()].hand.cards
         .where((PlayingCard card) => card.selectedForReplace)
         .length;
-    _state.players[_state.currentPlayer].hand.cards
+    _state.players[_getCurrentPlayer()].hand.cards
         .removeWhere((PlayingCard card) => card.selectedForReplace);
     for (int cardNum = 0; cardNum < numOfCardsToReplace; cardNum++) {
-      _handOutCardToPlayer(_state.currentPlayer);
+      _handOutCardToPlayer(_getCurrentPlayer());
     }
-    _sortPlayerCards(_state.currentPlayer);
-    _state.players[_state.currentPlayer].replacedCards = true;
+    _sortPlayerCards(_getCurrentPlayer());
+    _state.players[_getCurrentPlayer()].replacedCards = true;
   }
 
   void _endTurn() {
-    if (_state.currentPlayer == _state.players.length - 1) {
-      _endGame();
-    } else {
-      _state.currentPlayer += 1;
+    if (!_state.gameEnded) {
+      if (_state.numOfPlayersEndTurns == _state.players.length - 1) {
+        _endGame();
+      } else {
+        if (_store.currentRoom == 0) {
+          // ToDo: Maybe do it prettier (maybe some additional flag to indicate offline game)
+          _state.currentPlayer += 1; // offline game
+        }
+        _state.numOfPlayersEndTurns++;
+      }
     }
   }
 
@@ -198,6 +230,6 @@ class Dispatcher {
   }
 
   void _backToMenu() {
-    _store = GameStore.initial();
+    _state = GameState();
   }
 }

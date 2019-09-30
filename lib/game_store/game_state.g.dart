@@ -17,6 +17,7 @@ GameState _$GameStateFromJson(Map<String, dynamic> json) {
         ?.toList()
     ..currentPlayer = json['currentPlayer'] as int
     ..numOfPlayers = json['numOfPlayers'] as int
+    ..numOfPlayersEndTurns = json['numOfPlayersEndTurns'] as int
     ..handOutStrategy =
         _$enumDecodeNullable(_$HandOutStrategyEnumMap, json['handOutStrategy'])
     ..gameEnded = json['gameEnded'] as bool;
@@ -27,6 +28,7 @@ Map<String, dynamic> _$GameStateToJson(GameState instance) => <String, dynamic>{
       'players': instance.players,
       'currentPlayer': instance.currentPlayer,
       'numOfPlayers': instance.numOfPlayers,
+      'numOfPlayersEndTurns': instance.numOfPlayersEndTurns,
       'handOutStrategy': _$HandOutStrategyEnumMap[instance.handOutStrategy],
       'gameEnded': instance.gameEnded,
     };

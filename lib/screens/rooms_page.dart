@@ -24,22 +24,24 @@ class RoomsPage extends StatelessWidget {
             shrinkWrap: true,
             itemCount: viewModel.rooms.length,
             itemBuilder: (BuildContext context, int roomId) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: GestureDetector(
-                  onTap: () {
-                    viewModel
-                        .onEnterRoom(roomId + 1); // Room 0 is for offline game
-                  },
-                  child: Card(
-                    child: Text(
-                      'Room ${viewModel.rooms[roomId].title}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 22),
-                    ),
-                  ),
-                ),
-              );
+              // ToDo: Do it prettier
+              return roomId == 0
+                  ? Container(width: 0, height: 0)
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          viewModel.onEnterRoom(roomId);
+                        },
+                        child: Card(
+                          child: Text(
+                            'Room ${viewModel.rooms[roomId].title}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 22),
+                          ),
+                        ),
+                      ),
+                    );
             }),
         const Padding(padding: EdgeInsets.all(7.0)),
         FlatButton(

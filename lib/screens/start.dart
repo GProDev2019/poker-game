@@ -95,7 +95,6 @@ class _ViewModel {
       store.dispatch(StartOfflineGameAction(numOfPlayers));
       store.dispatch(NavigateToAction.push(Routes.offlineGame));
     }, () {
-      store.dispatch(DownloadRoomsAction());
       store.dispatch(NavigateToAction.push(Routes.rooms));
     });
   }

@@ -8,7 +8,7 @@ part 'game_store.g.dart';
 @JsonSerializable()
 class GameStore {
   GameState gameState = GameState();
-  List<Room> rooms = <Room>[];
+  List<Room> rooms = <Room>[Room()];
   int currentRoom;
 
   GameStore();

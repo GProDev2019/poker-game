@@ -12,6 +12,7 @@ class GameState {
   List<Player> players = <Player>[];
   int currentPlayer = 0;
   int numOfPlayers = 0;
+  int numOfPlayersEndTurns = 0;
   HandOutStrategy handOutStrategy = HandOutStrategy.oneByOneCard;
   bool gameEnded = false;
   static const int minNumOfPlayers = 2;

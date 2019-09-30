@@ -24,6 +24,8 @@ class StartOnlineGameAction {
 
 class DownloadRoomsAction {}
 
+class ClearRoomsAction {}
+
 class EnterRoomAction {
   final int roomId;
   EnterRoomAction(this.roomId);

@@ -9,7 +9,7 @@ class Room {
   String title;
   GameState gameState;
   static const int offlineGameRoomId = 0;
-  Room(this.title, this.gameState);
+  Room([this.title, this.gameState]);
 
   factory Room.fromJson(Map<String, dynamic> json) => _$RoomFromJson(json);
 

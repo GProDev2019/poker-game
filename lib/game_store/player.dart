@@ -1,9 +1,11 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:poker_game/game_logic/hand_names.dart';
+import 'package:poker_game/game_logic/hand_strength.dart';
 
 import 'hand.dart';
 
 part 'player.g.dart';
+
+int onlinePlayerIndex = -1;
 
 @JsonSerializable()
 class Player implements Comparable<Player> {

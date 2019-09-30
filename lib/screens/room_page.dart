@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
 import 'package:poker_game/game_logic/actions.dart';
+import 'package:poker_game/game_logic/dispatcher.dart';
+import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/game_store.dart';
+import 'package:poker_game/game_store/hand.dart';
+import 'package:poker_game/game_store/player.dart';
 import 'package:poker_game/middleware/room.dart';
 import 'package:poker_game/routes.dart';
 import 'package:redux/redux.dart';
@@ -41,7 +45,7 @@ class RoomPage extends StatelessWidget {
         const Padding(padding: EdgeInsets.all(7.0)),
         FlatButton(
           color: Colors.green,
-          child: const Text('Start game'),
+          child: Text(viewModel.startGameButtonText),
           onPressed: viewModel.onStartGame,
         ),
         const Padding(padding: EdgeInsets.all(7.0)),
@@ -59,21 +63,52 @@ class _ViewModel {
   final Room room;
   final Function() onStartGame;
   final Function() onBackToRooms;
+  final String startGameButtonText;
 
-  _ViewModel(this.room, this.onStartGame, this.onBackToRooms);
+  _ViewModel(this.room, this.onStartGame, this.onBackToRooms,
+      this.startGameButtonText);
 
   factory _ViewModel.create(Store<GameStore> store) {
+    // ToDo: Do it prettier
+    String startGameButtonText = 'Start game';
+    if (onlinePlayerIndex != -1 &&
+        Dispatcher.getGameState(store.state)
+                .players[onlinePlayerIndex]
+                .hand
+                .cards
+                .length ==
+            Hand.maxNumOfCards) {
+      startGameButtonText = 'Join game';
+    }
+
     return _ViewModel(store.state.rooms[store.state.currentRoom], () {
-      store.dispatch(StartOnlineGameAction(
-          store.state.rooms[store.state.currentRoom].gameState.players.length));
-      store.dispatch(
-          UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
-      store.dispatch(NavigateToAction.push(Routes.onlineGame));
+      if (onlinePlayerIndex != -1 &&
+          Dispatcher.getGameState(store.state)
+                  .players[onlinePlayerIndex]
+                  .hand
+                  .cards
+                  .length ==
+              Hand.maxNumOfCards) {
+        store.dispatch(NavigateToAction.push(
+            Routes.onlineGame)); // Join online game if someone else run it
+      } else {
+        final int numOfPlayers =
+            Dispatcher.getGameState(store.state).players.length;
+        if (GameState.minNumOfPlayers <= numOfPlayers &&
+            numOfPlayers <= GameState.maxNumOfPlayers) {
+          store.dispatch(StartOnlineGameAction(numOfPlayers));
+          store.dispatch(
+              UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
+          store.dispatch(NavigateToAction.push(Routes.onlineGame));
+        } else {
+          // ToDo: Show error
+        }
+      }
     }, () {
       store.dispatch(ExitRoomAction());
       store.dispatch(
           UpdateRoomAction(store.state.rooms[store.state.currentRoom]));
       store.dispatch(NavigateToAction.pop());
-    });
+    }, startGameButtonText);
   }
 }

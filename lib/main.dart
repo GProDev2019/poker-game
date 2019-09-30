@@ -8,6 +8,7 @@ import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/routes.dart';
 
 import 'game_store/game_store.dart';
+import 'middleware/connectivity.dart';
 import 'middleware/firestore_rooms.dart';
 import 'middleware/store_rooms_middleware.dart';
 
@@ -25,6 +26,10 @@ class PokerGame extends StatelessWidget {
     initialState: GameStore.initial(),
     middleware: createStoreMiddleware(firestoreRooms),
   );
+
+  PokerGame() {
+    subscribeForConnectivityChange(store);
+  }
 
   @override
   Widget build(BuildContext context) {
