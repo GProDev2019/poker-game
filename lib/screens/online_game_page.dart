@@ -93,30 +93,36 @@ class _ViewModel {
 
   factory _ViewModel.create(Store<GameStore> store) {
     final bool replacedCards = Dispatcher.getGameState(store.state)
-        .players[onlinePlayerIndex]
+        .players[store.state.localStore.onlinePlayerIndex]
         .replacedCards;
     return _ViewModel(
-        onlinePlayerIndex,
+        store.state.localStore.onlinePlayerIndex,
         replacedCards
             ? null
             : () {
                 store.dispatch(ReplaceCardsAction());
-                store.dispatch(UpdateRoomAction(
-                    store.state.onlineRooms[store.state.currentOnlineRoom]));
-              }, () {
-      if (!Dispatcher.getGameState(store.state).gameEnded) {
-        store.dispatch(EndTurnAction());
-        store.dispatch(UpdateRoomAction(
-            store.state.onlineRooms[store.state.currentOnlineRoom]));
-      }
-      if (Dispatcher.getGameState(store.state).gameEnded) {
-        store.dispatch(NavigateToAction.replace(Routes.results));
-      }
-    }, (PlayingCard card) {
+                store.dispatch(UpdateRoomAction(store.state
+                    .onlineRooms[store.state.localStore.currentOnlineRoom]));
+              },
+        store.state.localStore.onlineTurnEnded
+            ? null
+            : () {
+                if (!Dispatcher.getGameState(store.state).gameEnded) {
+                  store.dispatch(EndTurnAction());
+                  store.dispatch(UpdateRoomAction(store.state
+                      .onlineRooms[store.state.localStore.currentOnlineRoom]));
+                }
+                if (Dispatcher.getGameState(store.state).gameEnded) {
+                  store.dispatch(NavigateToAction.replace(Routes.results));
+                }
+              }, (PlayingCard card) {
       store.dispatch(ToggleSelectedCardAction(card));
       store.dispatch(UpdateRoomAction(
-          store.state.onlineRooms[store.state.currentOnlineRoom]));
-    }, Dispatcher.getGameState(store.state).players[onlinePlayerIndex].hand);
+          store.state.onlineRooms[store.state.localStore.currentOnlineRoom]));
+    },
+        Dispatcher.getGameState(store.state)
+            .players[store.state.localStore.onlinePlayerIndex]
+            .hand);
   }
 
   Color getCardColor(int index) {

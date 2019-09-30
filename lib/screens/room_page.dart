@@ -97,18 +97,18 @@ class _ViewModel {
         numOfPlayers <= GameState.maxNumOfPlayers) {
       minimumNumOfPlayersReached = true;
     }
-    return _ViewModel(store.state.onlineRooms[store.state.currentOnlineRoom],
-        () {
+    return _ViewModel(
+        store.state.onlineRooms[store.state.localStore.currentOnlineRoom], () {
       if (minimumNumOfPlayersReached) {
         store.dispatch(StartOnlineGameAction(numOfPlayers));
         store.dispatch(UpdateRoomAction(
-            store.state.onlineRooms[store.state.currentOnlineRoom]));
+            store.state.onlineRooms[store.state.localStore.currentOnlineRoom]));
         store.dispatch(NavigateToAction.push(Routes.onlineGame));
       }
     }, () {
       store.dispatch(ExitRoomAction());
       store.dispatch(UpdateRoomAction(
-          store.state.onlineRooms[store.state.currentOnlineRoom]));
+          store.state.onlineRooms[store.state.localStore.currentOnlineRoom]));
       store.dispatch(NavigateToAction.pop());
     }, minimumNumOfPlayersReached);
   }

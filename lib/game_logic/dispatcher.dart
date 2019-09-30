@@ -62,8 +62,8 @@ class Dispatcher {
   }
 
   static GameState getGameState(GameStore store) {
-    if (onlinePlayerIndex != null) {
-      return store.onlineRooms[store.currentOnlineRoom].gameState;
+    if (store.localStore.onlinePlayerIndex != null) {
+      return store.onlineRooms[store.localStore.currentOnlineRoom].gameState;
     } else {
       return store.offlineGameState;
     }
@@ -71,14 +71,15 @@ class Dispatcher {
 
   void _setGameState() {
     if (_state != null &&
-        _store.currentOnlineRoom != null &&
-        _store.onlineRooms.length > _store.currentOnlineRoom) {
-      _store.onlineRooms[_store.currentOnlineRoom].gameState = _state;
+        _store.localStore.currentOnlineRoom != null &&
+        _store.onlineRooms.length > _store.localStore.currentOnlineRoom) {
+      _store.onlineRooms[_store.localStore.currentOnlineRoom].gameState =
+          _state;
     }
   }
 
   int _getCurrentPlayer() {
-    return onlinePlayerIndex ?? _state.currentPlayerIndex;
+    return _store.localStore.onlinePlayerIndex ?? _state.currentPlayerIndex;
   }
 
   void _createOfflineGame() {
@@ -111,19 +112,24 @@ class Dispatcher {
   }
 
   void _enterRoom(EnterRoomAction action) {
-    _store.currentOnlineRoom = action.roomId;
-    onlinePlayerIndex =
-        _store.onlineRooms[_store.currentOnlineRoom].gameState.players.length;
+    _store.localStore.currentOnlineRoom = action.roomId;
+    _store.localStore.onlinePlayerIndex = _store
+        .onlineRooms[_store.localStore.currentOnlineRoom]
+        .gameState
+        .players
+        .length;
     _state = getGameState(_store);
     _state.numOfPlayers++;
-    _state.players.add(Player(onlinePlayerIndex));
+    _state.players.add(Player(_store.localStore.onlinePlayerIndex));
+    _store.localStore.waitingInRoom = true;
   }
 
   void _exitRoom() {
     _state.players.removeWhere((Player player) {
-      return player.playerIndex == onlinePlayerIndex;
+      return player.playerIndex == _store.localStore.onlinePlayerIndex;
     });
     _state.numOfPlayers--;
+    _store.localStore.waitingInRoom = false;
   }
 
   void _handOutCardsToPlayers() {
@@ -199,8 +205,10 @@ class Dispatcher {
       if (_state.numOfPlayersEndTurns == _state.players.length - 1) {
         _endGame();
       } else {
-        if (onlinePlayerIndex == null) {
+        if (_store.localStore.onlinePlayerIndex == null) {
           _state.currentPlayerIndex += 1; // offline game
+        } else {
+          _store.localStore.onlineTurnEnded = true;
         }
         _state.numOfPlayersEndTurns++;
       }

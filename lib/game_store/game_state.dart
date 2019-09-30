@@ -6,8 +6,6 @@ part 'game_state.g.dart';
 
 enum HandOutStrategy { oneByOneCard, allCardsAtOnce }
 
-int onlinePlayerIndex;
-
 @JsonSerializable()
 class GameState {
   Deck deck = Deck.initial();

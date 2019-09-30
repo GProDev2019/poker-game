@@ -23,7 +23,7 @@ class PokerGame extends StatelessWidget {
       FirestoreRooms(Firestore.instance);
   final Store<GameStore> store = Store<GameStore>(
     dispatcher.dispatchPokerGameAction,
-    initialState: GameStore.initial(),
+    initialState: GameStore(),
     middleware: createStoreMiddleware(firestoreRooms),
   );
 
