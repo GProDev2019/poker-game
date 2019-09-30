@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
+import 'package:poker_game/game_logic/dispatcher.dart';
+import 'package:poker_game/game_store/game_store.dart';
 import 'package:redux/redux.dart';
 
 import 'package:poker_game/game_logic/actions.dart';
-import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/player.dart';
 
 class ResultsPage extends StatelessWidget {
   static const Key backToMenuButton = Key('BACK_TO_MENU_BUTTON_KEY');
   @override
-  Widget build(BuildContext context) => StoreConnector<GameState, _ViewModel>(
-      converter: (Store<GameState> store) => _ViewModel.create(store),
+  Widget build(BuildContext context) => StoreConnector<GameStore, _ViewModel>(
+      converter: (Store<GameStore> store) => _ViewModel.create(store),
       builder: (BuildContext context, _ViewModel viewModel) => Scaffold(
           appBar: AppBar(
             title: const Text('Results'),
@@ -48,8 +49,8 @@ class _ViewModel {
     players.sort();
   }
 
-  factory _ViewModel.create(Store<GameState> store) {
-    return _ViewModel(store.state.players, () {
+  factory _ViewModel.create(Store<GameStore> store) {
+    return _ViewModel(Dispatcher.getGameState(store.state).players, () {
       store.dispatch(BackToMenuAction());
       store.dispatch(NavigateToAction.pop());
     });

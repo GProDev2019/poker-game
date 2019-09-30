@@ -1,17 +1,12 @@
+import 'package:json_annotation/json_annotation.dart';
+import 'package:poker_game/game_store/card_info.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 
-enum HandName {
-  highCard,
-  pair,
-  twoPairs,
-  threeOfAKind,
-  straight,
-  flush,
-  fullHouse,
-  fourOfAKind,
-  poker
-}
+import 'hand_name.dart';
 
+part 'hand_strength.g.dart';
+
+@JsonSerializable()
 class HandStrength implements Comparable<HandStrength> {
   HandName handName;
   CardRank higherCardRank;
@@ -102,6 +97,11 @@ class HandStrength implements Comparable<HandStrength> {
         throw 'Something is wrong with players hands as comparison of these two is not supported. First player: $handName, Second player: ${otherHandStrength.handName}';
     }
   }
+
+  factory HandStrength.fromJson(Map<String, dynamic> json) =>
+      _$HandStrengthFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HandStrengthToJson(this);
 }
 
 class HandStrengthChecker {

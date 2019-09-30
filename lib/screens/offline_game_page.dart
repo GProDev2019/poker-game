@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
+import 'package:poker_game/game_logic/dispatcher.dart';
+import 'package:poker_game/game_store/card_info.dart';
+import 'package:poker_game/game_store/game_store.dart';
 import 'package:redux/redux.dart';
 
 import 'package:poker_game/game_logic/actions.dart';
-import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/hand.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/routes.dart';
@@ -14,8 +16,8 @@ class OfflineGamePage extends StatelessWidget {
   static const Key cardsKey = Key('CARDS_KEY_');
   static const Key endTurnButtonKey = Key('END_TURN_BUTTON_KEY');
   @override
-  Widget build(BuildContext context) => StoreConnector<GameState, _ViewModel>(
-      converter: (Store<GameState> store) => _ViewModel.create(store),
+  Widget build(BuildContext context) => StoreConnector<GameStore, _ViewModel>(
+      converter: (Store<GameStore> store) => _ViewModel.create(store),
       builder: (BuildContext context, _ViewModel viewModel) {
         return Scaffold(
           appBar: AppBar(title: Text(viewModel.pageTitle)),
@@ -94,17 +96,20 @@ class _ViewModel {
       this.onToggleSelectedCard, this.playerCards)
       : pageTitle = 'Player $currentPlayer';
 
-  factory _ViewModel.create(Store<GameState> store) {
-    final int currentPlayer = store.state.currentPlayer;
-    final bool replacedCards = store.state.players[currentPlayer].replacedCards;
+  factory _ViewModel.create(Store<GameStore> store) {
+    final int currentPlayer =
+        Dispatcher.getGameState(store.state).currentPlayer;
+    final bool replacedCards = Dispatcher.getGameState(store.state)
+        .players[currentPlayer]
+        .replacedCards;
     return _ViewModel(currentPlayer,
         replacedCards ? null : () => store.dispatch(ReplaceCardsAction()), () {
       store.dispatch(EndTurnAction());
-      if (store.state.gameEnded) {
+      if (Dispatcher.getGameState(store.state).gameEnded) {
         store.dispatch(NavigateToAction.replace(Routes.results));
       }
     }, (PlayingCard card) => store.dispatch(ToggleSelectedCardAction(card)),
-        store.state.players[currentPlayer].hand);
+        Dispatcher.getGameState(store.state).players[currentPlayer].hand);
   }
 
   Color getCardColor(int index) {

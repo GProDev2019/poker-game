@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:poker_game/main.dart';
-import 'package:poker_game/screens/offline_game.dart';
-import 'package:poker_game/screens/results.dart';
+import 'package:poker_game/screens/offline_game_page.dart';
+import 'package:poker_game/screens/results_page.dart';
 import 'package:poker_game/screens/start.dart';
 
 void main() {

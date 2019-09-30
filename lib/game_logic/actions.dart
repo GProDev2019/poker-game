@@ -1,14 +1,10 @@
-import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/playing_card.dart';
+import 'package:poker_game/middleware/room.dart';
 
-class ChangeNumberOfPlayersAction {
+class StartOfflineGameAction {
   final int numOfPlayers;
-  ChangeNumberOfPlayersAction(this.numOfPlayers)
-      : assert(GameState.minNumOfPlayers <= numOfPlayers &&
-            numOfPlayers <= GameState.maxNumOfPlayers);
+  StartOfflineGameAction(this.numOfPlayers);
 }
-
-class StartOfflineGameAction {}
 
 class ToggleSelectedCardAction {
   final PlayingCard selectedCard;
@@ -20,3 +16,42 @@ class ReplaceCardsAction {}
 class EndTurnAction {}
 
 class BackToMenuAction {}
+
+class StartOnlineGameAction {
+  final int numOfPlayers;
+  StartOnlineGameAction(this.numOfPlayers);
+}
+
+class DownloadRoomsAction {}
+
+class ClearRoomsAction {}
+
+class EnterRoomAction {
+  final int roomId;
+  EnterRoomAction(this.roomId);
+}
+
+class ExitRoomAction {}
+
+class UpdateRoomAction {
+  final Room room;
+  UpdateRoomAction(this.room);
+}
+
+class LoadRoomsAction {
+  final List<Room> rooms;
+
+  LoadRoomsAction(this.rooms);
+}
+
+class CreateRoomAction {
+  final Room room;
+
+  CreateRoomAction(this.room);
+}
+
+class DeleteRooomAction {
+  final String id;
+
+  DeleteRooomAction(this.id);
+}
