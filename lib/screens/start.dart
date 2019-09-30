@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
-import 'package:poker_game/game_store/game_store.dart';
 import 'package:redux/redux.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 import 'package:poker_game/game_store/game_state.dart';
+import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/game_logic/actions.dart';
 import 'package:poker_game/routes.dart';
+import 'package:poker_game/utils/constants.dart';
 
 class StartPage extends StatelessWidget {
   static const Key offlineButtonKey = Key('OFFLINE_BUTTON_KEY');
@@ -16,9 +18,7 @@ class StartPage extends StatelessWidget {
   Widget build(BuildContext context) => StoreConnector<GameStore, _ViewModel>(
       converter: (Store<GameStore> store) => _ViewModel.create(store),
       builder: (BuildContext context, _ViewModel viewModel) => Scaffold(
-          appBar: AppBar(
-            title: Text(viewModel.pageTitle),
-          ),
+          backgroundColor: greenBackground,
           body: _createWidget(context, viewModel)));
 
   Widget _createWidget(BuildContext context, _ViewModel viewModel) {
@@ -26,25 +26,55 @@ class StartPage extends StatelessWidget {
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            FlatButton(
-              key: offlineButtonKey,
-              color: Colors.green,
-              child: const Text('PLAY OFFLINE'),
-              onPressed: () {
-                if (viewModel.canBeStarted) {
-                  viewModel.onPlayOffline(viewModel.numOfPlayers);
-                }
-              },
+            AutoSizeText(
+              'POKER GAME',
+              style: TextStyle(
+                  fontFamily: 'Casino', fontSize: 70, color: goldFontColor),
+              maxFontSize: 100,
+              maxLines: 1,
             ),
-            FlatButton(
-              color: Colors.green,
-              child: const Text('PLAY ONLINE'),
-              onPressed: () {
-                if (viewModel.canBeStarted) {
-                  viewModel.onPlayOnline();
-                }
-              },
-            ),
+            Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal:
+                        100), // ToDo: check if resize of screen does not break anything
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    ButtonTheme(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: FlatButton(
+                          key: offlineButtonKey,
+                          color: burgundyButtonColor,
+                          child: const AutoSizeText(
+                            'PLAY OFFLINE',
+                            style: TextStyle(fontFamily: 'Casino'),
+                            maxLines: 1,
+                          ),
+                          onPressed: () {
+                            if (viewModel.canBeStarted) {
+                              viewModel.onPlayOffline(viewModel.numOfPlayers);
+                            }
+                          },
+                        )),
+                    ButtonTheme(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: FlatButton(
+                          color: burgundyButtonColor,
+                          child: const AutoSizeText(
+                            'PLAY ONLINE',
+                            style: TextStyle(fontFamily: 'Casino'),
+                            maxLines: 1,
+                          ),
+                          onPressed: () {
+                            if (viewModel.canBeStarted) {
+                              viewModel.onPlayOnline();
+                            }
+                          },
+                        )),
+                  ],
+                )),
             const Text('Number of players: '),
             Container(
               padding: const EdgeInsets.only(left: 50), // ToDo: Fix this
