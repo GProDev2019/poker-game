@@ -37,6 +37,9 @@ class Dispatcher {
       case ExitRoomAction:
         _exitRoom();
         break;
+      case CleanLocalStoreAction:
+        _cleanLocalStore();
+        break;
       case ToggleSelectedCardAction:
         _toggleCard(action);
         break;
@@ -80,11 +83,11 @@ class Dispatcher {
   }
 
   void _setGameState() {
-    if (_state != null &&
-        _store.localStore.currentOnlineRoom != null &&
-        _store.onlineRooms.length > _store.localStore.currentOnlineRoom) {
+    if (_store.localStore.isOnlineGame()) {
       _store.onlineRooms[_store.localStore.currentOnlineRoom].gameState =
           _state;
+    } else {
+      _store.offlineGameState = _state;
     }
   }
 
@@ -135,7 +138,12 @@ class Dispatcher {
       return player.playerIndex == _store.localStore.onlinePlayerIndex;
     });
     _state.numOfPlayers--;
+  }
+
+  void _cleanLocalStore() {
+    _store.localStore.currentOnlineRoom = null;
     _store.localStore.waitingInRoom = false;
+    _store.localStore.onlinePlayerIndex = null;
   }
 
   void _handOutCardsToPlayers() {
@@ -234,6 +242,6 @@ class Dispatcher {
   }
 
   void _backToMenu() {
-    _state = GameState();
+    _state = null;
   }
 }

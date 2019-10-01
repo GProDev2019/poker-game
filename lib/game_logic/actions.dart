@@ -31,6 +31,8 @@ class EnterRoomAction {
 
 class ExitRoomAction {}
 
+class CleanLocalStoreAction {}
+
 class UpdateRoomAction {
   final Room room;
   UpdateRoomAction(this.room);

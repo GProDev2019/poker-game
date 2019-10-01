@@ -113,10 +113,13 @@ class _ViewModel {
     }
 
     final Function _onBackToRooms = () {
-      store.dispatch(ExitRoomAction());
-      store.dispatch(
-          UpdateRoomAction(Dispatcher.getCurrentOnlineRoom(store.state)));
-      store.dispatch(NavigateToAction.pop());
+      store.dispatch(NavigateToAction.pop(postNavigation: () {
+        // ToDo: This is not working as expected. Maybe async_redux will fix issue with null exceptions?
+        store.dispatch(ExitRoomAction());
+        store.dispatch(
+            UpdateRoomAction(Dispatcher.getCurrentOnlineRoom(store.state)));
+        store.dispatch(CleanLocalStoreAction());
+      }));
     };
 
     return _ViewModel(Dispatcher.getCurrentOnlineRoom(store.state),

@@ -56,8 +56,10 @@ class _ViewModel {
 
   factory _ViewModel.create(Store<GameStore> store) {
     return _ViewModel(Dispatcher.getGameState(store.state).players, () {
-      store.dispatch(BackToMenuAction());
-      store.dispatch(NavigateToAction.pop());
+      store.dispatch(NavigateToAction.pop(postNavigation: () {
+        store.dispatch(
+            BackToMenuAction()); // ToDo: This is not working as expected. Maybe async_redux will fix issue with null exceptions?
+      }));
     });
   }
 }
