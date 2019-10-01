@@ -13,7 +13,9 @@ import 'package:poker_game/utils/constants.dart';
 
 class StartPage extends StatelessWidget {
   static const Key offlineButtonKey = Key('OFFLINE_BUTTON_KEY');
-  static const Key numOfPlayersInputFieldKey = Key('PASSWORD_INPUT_FIELD_KEY');
+  static const Key numOfPlayersInputFieldKey =
+      Key('NUM_OF_PLAYERS_INPUT_FIELD_KEY');
+  static const Key startGameButtonKey = Key('START_GAME_BUTTON_KEY');
 
   @override
   Widget build(BuildContext context) => StoreConnector<GameStore, _ViewModel>(
@@ -62,6 +64,7 @@ class StartPage extends StatelessWidget {
                                     children: <Widget>[
                                       const Text('Number of players:'),
                                       TextFormField(
+                                        key: numOfPlayersInputFieldKey,
                                         textAlign: TextAlign.center,
                                         expands: false,
                                         initialValue: '2',
@@ -90,6 +93,7 @@ class StartPage extends StatelessWidget {
                                         },
                                       ),
                                       FlatButton(
+                                        key: startGameButtonKey,
                                         color: burgundyButtonColor,
                                         child: const Text('Start Game'),
                                         onPressed: () {
