@@ -9,29 +9,27 @@ void main() {
   testWidgets('Offline game smoke test', (WidgetTester tester) async {
     await tester.pumpWidget(PokerGame());
     const int numOfPlayers = 2;
-    await tester.enterText(find.byKey(StartPage.numOfPlayersInputFieldKey),
-        numOfPlayers.toString());
-    expect(find.text(numOfPlayers.toString()), findsOneWidget);
 
     await tester.tap(find.byKey(StartPage.offlineButtonKey));
     await tester.pumpAndSettle();
 
-    final Finder cardWidget1 =
-        find.byKey(Key(GamePage.cardsKey.toString() + '1'));
+    await tester.enterText(find.byKey(StartPage.numOfPlayersInputFieldKey),
+        numOfPlayers.toString());
+    expect(find.text(numOfPlayers.toString()), findsOneWidget);
+
+    await tester.tap(find.byKey(StartPage.startGameButtonKey));
+    await tester.pumpAndSettle();
+
+    final Finder cardWidget1 = find.byKey(Key(GamePage.cardsKeyString + '1'));
     await tester.tap(cardWidget1);
-    final Finder cardWidget2 =
-        find.byKey(Key(GamePage.cardsKey.toString() + '2'));
-    await tester.tap(cardWidget2);
 
     await tester.tap(find.byKey(GamePage.replaceCardsButtonKey));
     await tester.tap(find.byKey(GamePage.endTurnButtonKey));
     await tester.pump();
 
-    final Finder cardWidget3 =
-        find.byKey(Key(GamePage.cardsKey.toString() + '3'));
+    final Finder cardWidget3 = find.byKey(Key(GamePage.cardsKeyString + '3'));
     await tester.tap(cardWidget3);
-    final Finder cardWidget4 =
-        find.byKey(Key(GamePage.cardsKey.toString() + '4'));
+    final Finder cardWidget4 = find.byKey(Key(GamePage.cardsKeyString + '4'));
     await tester.tap(cardWidget4);
 
     await tester.tap(find.byKey(GamePage.replaceCardsButtonKey));
@@ -39,6 +37,6 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(ResultsPage.backToMenuButton));
+    await tester.tap(find.byKey(ResultsPage.backToMenuButtonKey));
   });
 }

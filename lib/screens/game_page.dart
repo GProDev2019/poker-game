@@ -13,7 +13,7 @@ import 'package:redux/redux.dart';
 
 class GamePage extends StatelessWidget {
   static const Key replaceCardsButtonKey = Key('REPLACE_CARDS_BUTTON_KEY');
-  static const Key cardsKey = Key('CARDS_KEY_');
+  static const String cardsKeyString = 'CARDS_KEY_';
   static const Key endTurnButtonKey = Key('END_TURN_BUTTON_KEY');
   @override
   Widget build(BuildContext context) => StoreConnector<GameStore, _ViewModel>(
@@ -46,7 +46,7 @@ class GamePage extends StatelessWidget {
           final String cardRank = card.rank.toString().split('.').last;
           return Expanded(
               child: FlatButton(
-                  key: Key(cardsKey.toString() + i.toString()),
+                  key: Key(cardsKeyString + i.toString()),
                   color: viewModel.getCardColor(i),
                   child: Column(
                     children: <Widget>[

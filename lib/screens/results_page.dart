@@ -9,7 +9,7 @@ import 'package:poker_game/game_logic/actions.dart';
 import 'package:poker_game/game_store/player.dart';
 
 class ResultsPage extends StatelessWidget {
-  static const Key backToMenuButton = Key('BACK_TO_MENU_BUTTON_KEY');
+  static const Key backToMenuButtonKey = Key('BACK_TO_MENU_BUTTON_KEY');
   @override
   Widget build(BuildContext context) => StoreConnector<GameStore, _ViewModel>(
       converter: (Store<GameStore> store) => _ViewModel.create(store),
@@ -37,7 +37,7 @@ class ResultsPage extends StatelessWidget {
               );
             }),
         FlatButton(
-          key: backToMenuButton,
+          key: backToMenuButtonKey,
           child: const Text('Back to menu'),
           onPressed: viewModel.onButtonClick,
         )
