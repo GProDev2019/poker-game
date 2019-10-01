@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:poker_game/game_store/card_info.dart';
-import 'package:poker_game/game_store/playing_card.dart';
 
 import 'hand_name.dart';
 

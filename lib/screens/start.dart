@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
+import 'package:poker_game/utils/widgets.dart';
 import 'package:redux/redux.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
@@ -106,22 +107,11 @@ class StartPage extends StatelessWidget {
                             });
                       },
                     )),
-                ButtonTheme(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: FlatButton(
-                      color: burgundyButtonColor,
-                      child: const AutoSizeText(
-                        'PLAY ONLINE',
-                        style: TextStyle(fontFamily: 'Casino'),
-                        maxLines: 1,
-                      ),
-                      onPressed: () {
-                        if (viewModel.canBeStarted) {
-                          viewModel.onPlayOnline();
-                        }
-                      },
-                    )),
+                createPokerButton('PLAY ONLINE', () {
+                  if (viewModel.canBeStarted) {
+                    viewModel.onPlayOnline();
+                  }
+                })
               ],
             )),
       ]),

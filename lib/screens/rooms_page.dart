@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
@@ -6,6 +7,8 @@ import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/middleware/room.dart';
 import 'package:poker_game/routes.dart';
+import 'package:poker_game/utils/constants.dart';
+import 'package:poker_game/utils/widgets.dart';
 import 'package:redux/redux.dart';
 
 class RoomsPage extends StatelessWidget {
@@ -16,6 +19,7 @@ class RoomsPage extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Rooms'),
           ),
+          backgroundColor: greenBackground,
           body: _createWidget(context, viewModel)));
 
   Widget _createWidget(BuildContext context, _ViewModel viewModel) {
@@ -31,31 +35,29 @@ class RoomsPage extends StatelessWidget {
                   onTap: () {
                     viewModel.onEnterRoom(roomIndex);
                   },
-                  child: ListTile(
-                    title: Text(
-                      'Room ${viewModel.rooms[roomIndex].title}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 22),
+                  child: Card(
+                    color: goldFontColor,
+                    child: Container(
+                      padding: const EdgeInsets.all(5.0),
+                      color: goldFontColor,
+                      child: ListTile(
+                        title: Text(
+                          'Room: ${viewModel.rooms[roomIndex].id.substring(0, 5)}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 22),
+                        ),
+                        trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => viewModel.onDeleteRoom(roomIndex)),
+                      ),
                     ),
-                    trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => viewModel.onDeleteRoom(roomIndex)),
                   ),
                 ),
               );
             }),
         const Padding(padding: EdgeInsets.all(7.0)),
-        FlatButton(
-          color: Colors.green,
-          child: const Text('Create new room'),
-          onPressed: viewModel.onCreateNewRoom,
-        ),
-        const Padding(padding: EdgeInsets.all(7.0)),
-        FlatButton(
-          color: Colors.red,
-          child: const Text('Back to menu'),
-          onPressed: viewModel.onBackToMenu,
-        )
+        createPokerButton('Create new room', viewModel.onCreateNewRoom),
+        const Padding(padding: EdgeInsets.all(7.0))
       ],
     );
   }
