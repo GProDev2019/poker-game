@@ -15,11 +15,8 @@ dependencies:
   cloud_firestore: ^0.12.9+4
   json_annotation: ^3.0.0
   connectivity: ^0.4.4
-<<<<<<< HEAD
   redux_thunk: ^0.2.1
-=======
   auto_size_text: ^2.1.0
->>>>>>> Better visualization of start page
 
 dev_dependencies:
   flutter_test:
