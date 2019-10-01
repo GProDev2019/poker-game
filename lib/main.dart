@@ -13,6 +13,7 @@ import 'middleware/firestore_rooms.dart';
 import 'middleware/store_rooms_middleware.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(PokerGame());
 }
 
