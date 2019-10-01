@@ -11,6 +11,8 @@ class ToggleSelectedCardAction {
   ToggleSelectedCardAction(this.selectedCard);
 }
 
+class UncoverCardsAction {}
+
 class ReplaceCardsAction {}
 
 class EndTurnAction {}
