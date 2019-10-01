@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:redux/redux.dart';
+
 import 'package:poker_game/game_logic/actions.dart';
 import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/game_store/card_info.dart';
@@ -8,8 +11,7 @@ import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/game_store/hand.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/routes.dart';
-
-import 'package:redux/redux.dart';
+import 'package:poker_game/utils/constants.dart';
 
 class GamePage extends StatelessWidget {
   static const Key replaceCardsButtonKey = Key('REPLACE_CARDS_BUTTON_KEY');
@@ -20,19 +22,66 @@ class GamePage extends StatelessWidget {
       converter: (Store<GameStore> store) => _ViewModel.create(store),
       builder: (BuildContext context, _ViewModel viewModel) {
         return Scaffold(
-          appBar: AppBar(title: Text(viewModel.pageTitle)),
+          //appBar: AppBar(title: Text(viewModel.pageTitle)), // ToDo: Consider back arrow that resets the game
+          backgroundColor: greenBackground,
           body: _createWidget(context, viewModel),
         );
       });
 
   Widget _createWidget(BuildContext context, _ViewModel viewModel) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.only(top: 150),
+          child: AutoSizeText(
+            '${viewModel.pageTitle}',
+            style: TextStyle(
+                fontFamily: 'Casino3DFilledMarquee',
+                fontSize: 50,
+                color: goldFontColor),
+            maxLines: 1,
+          ),
+        ),
+        Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              _createCards(viewModel),
+              _createButtons(viewModel)
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _createButtons(_ViewModel viewModel) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 30),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          _createCards(viewModel),
-          _createReplaceCardsButton(viewModel),
-          _createEndTurnButton(viewModel)
+          ButtonTheme(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              child: FlatButton(
+                color: burgundyButtonColor,
+                child: const AutoSizeText('Replace Cards',
+                    style: TextStyle(fontFamily: 'Casino')),
+                disabledColor: Colors.grey,
+                onPressed: viewModel.onReplaceCards,
+              )),
+          ButtonTheme(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              child: FlatButton(
+                color: burgundyButtonColor,
+                child: const AutoSizeText('End Turn',
+                    style: TextStyle(fontFamily: 'Casino')),
+                disabledColor: Colors.grey,
+                onPressed: viewModel.onEndTurn,
+              ))
         ],
       ),
     );
@@ -43,44 +92,21 @@ class GamePage extends StatelessWidget {
       child: Row(
         children: List<Expanded>.generate(Hand.maxNumOfCards, (int i) {
           final PlayingCard card = viewModel.playerCards.cards[i];
-          final String cardRank = card.rank.toString().split('.').last;
+          EdgeInsets padding;
+          if (card.selectedForReplace) {
+            padding = const EdgeInsets.fromLTRB(5, 0, 5, 9);
+          } else {
+            padding = const EdgeInsets.all(5);
+          }
           return Expanded(
               child: FlatButton(
+                  padding: padding,
                   key: Key(cardsKeyString + i.toString()),
-                  color: viewModel.getCardColor(i),
-                  child: Column(
-                    children: <Widget>[
-                      Text(card.selectedForReplace.toString(),
-                          style: TextStyle(color: Colors.white)),
-                      Text(cardRank, style: TextStyle(color: Colors.white))
-                    ],
-                  ),
+                  child: card.cardImage,
                   onPressed: () => viewModel.onToggleSelectedCard(card)));
         }),
       ),
     );
-  }
-
-  Widget _createReplaceCardsButton(_ViewModel viewModel) {
-    return Container(
-        child: FlatButton(
-      key: replaceCardsButtonKey,
-      child: const Text('Replace Cards'),
-      color: Colors.blue,
-      disabledColor: Colors.grey,
-      onPressed: viewModel.onReplaceCards,
-    ));
-  }
-
-  Widget _createEndTurnButton(_ViewModel viewModel) {
-    return Container(
-        padding: const EdgeInsets.only(bottom: 30.0),
-        child: FlatButton(
-          key: endTurnButtonKey,
-          child: const Text('End Turn'),
-          color: Colors.blue,
-          onPressed: viewModel.onEndTurn,
-        ));
   }
 }
 
