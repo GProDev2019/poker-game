@@ -3,7 +3,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="poker_game"
+        android:label="Poker Game"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
