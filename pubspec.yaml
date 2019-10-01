@@ -16,6 +16,7 @@ dependencies:
   json_annotation: ^3.0.0
   connectivity: ^0.4.4
   redux_thunk: ^0.2.1
+  auto_size_text: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -28,9 +29,14 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   fonts:
-    - family:
+    - family: Casino
       fonts:
-        - asset: fonts/casino/Casino.ttf
-        - asset: fonts/casino/Casino-Italic.ttf
+        - asset: assets/fonts/casino/Casino.ttf
+        - asset: assets/fonts/casino/Casino-Italic.ttf
+          style: italic
+    - family: Casino3DFilledMarquee
+      fonts:
+        - asset: assets/fonts/casino/Casino3DFilledMarquee.ttf
+        - asset: assets/fonts/casino/Casino3DFilledMarquee-Italic.ttf
           style: italic
     
