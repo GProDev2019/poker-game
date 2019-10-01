@@ -92,18 +92,17 @@ class GamePage extends StatelessWidget {
       child: Row(
         children: List<Expanded>.generate(Hand.maxNumOfCards, (int i) {
           final PlayingCard card = viewModel.playerCards.cards[i];
-          final String cardRank = card.rank.toString().split('.').last;
+          EdgeInsets padding;
+          if (card.selectedForReplace) {
+            padding = const EdgeInsets.fromLTRB(5, 0, 5, 9);
+          } else {
+            padding = const EdgeInsets.all(5);
+          }
           return Expanded(
               child: FlatButton(
+                  padding: padding,
                   key: Key(cardsKeyString + i.toString()),
-                  color: viewModel.getCardColor(i),
-                  child: Column(
-                    children: <Widget>[
-                      Text(card.selectedForReplace.toString(),
-                          style: TextStyle(color: Colors.white)),
-                      Text(cardRank, style: TextStyle(color: Colors.white))
-                    ],
-                  ),
+                  child: card.cardImage,
                   onPressed: () => viewModel.onToggleSelectedCard(card)));
         }),
       ),

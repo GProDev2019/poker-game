@@ -31,8 +31,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/cards/cards.png
-    - assets/cards/card_back.png
+    - assets/cards/
   fonts:
     - family: Casino
       fonts:
