@@ -21,11 +21,20 @@ class GamePage extends StatelessWidget {
   Widget build(BuildContext context) => StoreConnector<GameStore, _ViewModel>(
       converter: (Store<GameStore> store) => _ViewModel.create(store),
       builder: (BuildContext context, _ViewModel viewModel) {
-        return Scaffold(
+        final Scaffold page = Scaffold(
           //appBar: AppBar(title: Text(viewModel.pageTitle)), // ToDo: Consider back arrow that resets the game
           backgroundColor: greenBackground,
           body: _createWidget(context, viewModel),
         );
+        final GestureDetector pageWithCoveredCards = GestureDetector(
+          onTap: () => viewModel.onUncoverCards(),
+          child: page,
+        );
+        if (viewModel.coverCards) {
+          return pageWithCoveredCards;
+        } else {
+          return page;
+        }
       });
 
   Widget _createWidget(BuildContext context, _ViewModel viewModel) {
@@ -70,7 +79,8 @@ class GamePage extends StatelessWidget {
                 child: const AutoSizeText('Replace Cards',
                     style: TextStyle(fontFamily: 'Casino')),
                 disabledColor: Colors.grey,
-                onPressed: viewModel.onReplaceCards,
+                onPressed:
+                    (viewModel.coverCards) ? null : viewModel.onReplaceCards,
               )),
           ButtonTheme(
               shape: RoundedRectangleBorder(
@@ -80,7 +90,7 @@ class GamePage extends StatelessWidget {
                 child: const AutoSizeText('End Turn',
                     style: TextStyle(fontFamily: 'Casino')),
                 disabledColor: Colors.grey,
-                onPressed: viewModel.onEndTurn,
+                onPressed: (viewModel.coverCards) ? null : viewModel.onEndTurn,
               ))
         ],
       ),
@@ -93,7 +103,7 @@ class GamePage extends StatelessWidget {
         children: List<Expanded>.generate(Hand.maxNumOfCards, (int i) {
           final PlayingCard card = viewModel.playerCards.cards[i];
           EdgeInsets padding;
-          if (card.selectedForReplace) {
+          if (card.selectedForReplace && !viewModel.coverCards) {
             padding = const EdgeInsets.fromLTRB(5, 0, 5, 9);
           } else {
             padding = const EdgeInsets.all(5);
@@ -102,8 +112,12 @@ class GamePage extends StatelessWidget {
               child: FlatButton(
                   padding: padding,
                   key: Key(cardsKeyString + i.toString()),
-                  child: card.cardImage,
-                  onPressed: () => viewModel.onToggleSelectedCard(card)));
+                  child: (viewModel.coverCards)
+                      ? PlayingCard.cardBackImage
+                      : card.cardImage,
+                  onPressed: (viewModel.coverCards)
+                      ? null
+                      : () => viewModel.onToggleSelectedCard(card)));
         }),
       ),
     );
@@ -112,14 +126,22 @@ class GamePage extends StatelessWidget {
 
 class _ViewModel {
   final int currentPlayer;
+  final bool coverCards;
+  final Function() onUncoverCards;
   final Function() onReplaceCards;
   final Function() onEndTurn;
   final Function(PlayingCard card) onToggleSelectedCard;
   final Hand playerCards;
   final String pageTitle;
 
-  _ViewModel(this.currentPlayer, this.onReplaceCards, this.onEndTurn,
-      this.onToggleSelectedCard, this.playerCards)
+  _ViewModel(
+      this.currentPlayer,
+      this.coverCards,
+      this.onUncoverCards,
+      this.onReplaceCards,
+      this.onEndTurn,
+      this.onToggleSelectedCard,
+      this.playerCards)
       : pageTitle = 'Player $currentPlayer';
 
   factory _ViewModel.create(Store<GameStore> store) {
@@ -130,6 +152,9 @@ class _ViewModel {
 
     return _ViewModel(
         currentPlayer,
+        Dispatcher.getGameState(store.state).coverCards &&
+            !store.state.localStore.isOnlineGame(),
+        () => store.dispatch(UncoverCardsAction()),
         replacedCards
             ? null
             : () {

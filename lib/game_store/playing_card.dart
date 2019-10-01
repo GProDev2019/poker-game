@@ -9,8 +9,8 @@ part 'playing_card.g.dart';
 class PlayingCard implements Comparable<PlayingCard> {
   static const CardRank minCardRank = CardRank.two;
   static const CardRank maxCardRank = CardRank.ace;
-  static const Image imageBackPath = Image(
-    image: AssetImage('assets/cards/red_black.png'),
+  static const Image cardBackImage = Image(
+    image: AssetImage('assets/cards/red_back.png'),
     fit: BoxFit.contain,
   );
   Image cardImage;

@@ -40,6 +40,9 @@ class Dispatcher {
       case ToggleSelectedCardAction:
         _toggleCard(action);
         break;
+      case UncoverCardsAction:
+        _uncoverCards();
+        break;
       case ReplaceCardsAction:
         _replaceCards();
         break;
@@ -192,6 +195,10 @@ class Dispatcher {
         .selectedForReplace = !action.selectedCard.selectedForReplace;
   }
 
+  void _uncoverCards() {
+    _state.coverCards = false;
+  }
+
   void _replaceCards() {
     final int playerIndex = getCurrentPlayer(_store);
     final int numOfCardsToReplace = _state.players[playerIndex].hand.cards
@@ -215,6 +222,7 @@ class Dispatcher {
           _store.localStore.onlineTurnEnded = true;
         } else {
           _state.currentPlayerIndex += 1;
+          _state.coverCards = true;
         }
         _state.numOfPlayersEndTurns++;
       }
