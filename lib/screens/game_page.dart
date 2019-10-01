@@ -152,7 +152,7 @@ class _ViewModel {
 
     return _ViewModel(
         currentPlayer,
-        Dispatcher.getGameState(store.state).coverCards &&
+        store.state.localStore.coverCards &&
             !store.state.localStore.isOnlineGame(),
         () => store.dispatch(UncoverCardsAction()),
         replacedCards

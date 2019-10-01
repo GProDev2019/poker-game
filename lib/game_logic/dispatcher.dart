@@ -196,7 +196,7 @@ class Dispatcher {
   }
 
   void _uncoverCards() {
-    _state.coverCards = false;
+    _store.localStore.coverCards = false;
   }
 
   void _replaceCards() {
@@ -222,7 +222,7 @@ class Dispatcher {
           _store.localStore.onlineTurnEnded = true;
         } else {
           _state.currentPlayerIndex += 1;
-          _state.coverCards = true;
+          _store.localStore.coverCards = true;
         }
         _state.numOfPlayersEndTurns++;
       }
