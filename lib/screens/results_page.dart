@@ -26,9 +26,14 @@ class ResultsPage extends StatelessWidget {
             shrinkWrap: true,
             itemCount: viewModel.players.length,
             itemBuilder: (BuildContext context, int position) {
-              return Card(
-                child: Text(
-                    'Player ${viewModel.players[position].playerIndex.toString()}'),
+              return ListTile(
+                title: Card(
+                  child: Text(
+                      'Player ${viewModel.players[position].playerIndex.toString()}'),
+                ),
+                subtitle: Text(
+                    '${viewModel.players[position].handStrength.handName.toString()}\n'
+                    '${viewModel.players[position].handStrength.cardRanks.toString()}'),
               );
             }),
         FlatButton(
