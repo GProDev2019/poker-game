@@ -1,7 +1,9 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:redux/redux.dart';
+
 import 'package:poker_game/game_logic/actions.dart';
 import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/game_store/card_info.dart';
@@ -10,8 +12,6 @@ import 'package:poker_game/game_store/hand.dart';
 import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/routes.dart';
 import 'package:poker_game/utils/constants.dart';
-
-import 'package:redux/redux.dart';
 
 class GamePage extends StatelessWidget {
   static const Key replaceCardsButtonKey = Key('REPLACE_CARDS_BUTTON_KEY');
