@@ -8,6 +8,7 @@ import 'package:poker_game/game_logic/actions.dart';
 import 'package:poker_game/game_logic/dispatcher.dart';
 import 'package:poker_game/game_store/game_store.dart';
 import 'package:poker_game/game_store/player.dart';
+import 'package:poker_game/game_store/playing_card.dart';
 import 'package:poker_game/utils/constants.dart';
 
 class ResultsPage extends StatelessWidget {
@@ -46,13 +47,8 @@ class ResultsPage extends StatelessWidget {
                       .toString()
                       .split('.')
                       .last;
-              final List<String> cards = List<String>.generate(
-                  viewModel.players[position].handStrength.cardRanks.length,
-                  (int card) => viewModel
-                      .players[position].handStrength.cardRanks[card]
-                      .toString()
-                      .split('.')
-                      .last);
+              final List<PlayingCard> cards =
+                  viewModel.players[position].hand.cards;
               return Card(
                   color: greenCardColor,
                   child: ListTile(
@@ -69,7 +65,7 @@ class ResultsPage extends StatelessWidget {
                                 fontFamily: 'Casino',
                                 fontStyle: FontStyle.italic),
                           ),
-                          Text('Cards: ' + cards.toString())
+                          _createCards(cards)
                         ],
                       )));
             }),
@@ -87,6 +83,20 @@ class ResultsPage extends StatelessWidget {
                 onPressed: viewModel.onButtonClick,
               )))
     ]));
+  }
+
+  Widget _createCards(List<PlayingCard> cards) {
+    return Container(
+      child: Row(
+        children: List<Expanded>.generate(cards.length, (int i) {
+          final PlayingCard card = cards[i];
+          const EdgeInsets padding = EdgeInsets.all(5);
+          return Expanded(
+              child: FlatButton(
+                  padding: padding, child: card.cardImage, onPressed: null));
+        }),
+      ),
+    );
   }
 }
 
