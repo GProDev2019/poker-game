@@ -107,7 +107,7 @@ class _ViewModel {
           store.dispatch(StartOnlineGameAction(numOfPlayers));
           store.dispatch(
               UpdateRoomAction(Dispatcher.getCurrentOnlineRoom(store.state)));
-          store.dispatch(NavigateToAction.push(Routes.game));
+          store.dispatch(NavigateToAction.replace(Routes.game));
         }
       };
     }

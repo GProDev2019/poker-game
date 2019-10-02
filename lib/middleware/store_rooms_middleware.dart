@@ -95,10 +95,10 @@ void Function(
 
 ThunkAction<GameStore> switchToGame = (Store<GameStore> store) async {
   store.state.localStore.waitingInRoom = false;
-  store.dispatch(NavigateToAction.push(Routes.game));
+  store.dispatch(NavigateToAction.replace(Routes.game));
 };
 
 ThunkAction<GameStore> switchToResults = (Store<GameStore> store) async {
   store.state.localStore.onlineTurnEnded = false;
-  store.dispatch(NavigateToAction.push(Routes.results));
+  store.dispatch(NavigateToAction.replace(Routes.results));
 };
