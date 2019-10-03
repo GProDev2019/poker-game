@@ -28,7 +28,7 @@ class StartPage extends StatelessWidget {
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            AutoSizeText(
+            const AutoSizeText(
               'POKER GAME',
               style: TextStyle(
                   fontFamily: 'Casino', fontSize: 70, color: goldFontColor),
