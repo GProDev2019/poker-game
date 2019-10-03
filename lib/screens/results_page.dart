@@ -26,7 +26,7 @@ class ResultsPage extends StatelessWidget {
       Container(
         padding: const EdgeInsets.only(top: 50),
         height: MediaQuery.of(context).size.height / 6,
-        child: AutoSizeText(
+        child: const AutoSizeText(
           'RESULTS',
           style: TextStyle(
               fontFamily: 'Casino3DFilledMarquee',
@@ -49,13 +49,28 @@ class ResultsPage extends StatelessWidget {
                       .last;
               final List<PlayingCard> cards =
                   viewModel.players[position].hand.cards;
+              const int listIndexOffset = 1;
+              const int firstPlaceIndex = 0;
+              Widget winnerHighlight;
+              if (position == firstPlaceIndex) {
+                winnerHighlight = const Text('Winner!',
+                    style:
+                        TextStyle(fontFamily: 'Casino', color: goldFontColor));
+              } else {
+                winnerHighlight = Container();
+              }
               return Card(
                   color: greenCardColor,
                   child: ListTile(
-                      title: Text(
-                        'Player ${viewModel.players[position].playerIndex.toString()}',
-                        style: const TextStyle(fontFamily: 'Casino'),
-                      ),
+                      title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              '${position + listIndexOffset}. Player ${viewModel.players[position].playerIndex.toString()}',
+                              style: const TextStyle(fontFamily: 'Casino'),
+                            ),
+                            winnerHighlight
+                          ]),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
