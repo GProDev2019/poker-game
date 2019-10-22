@@ -6,6 +6,7 @@ import 'package:poker_game/routes.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux/redux.dart';
 
+import 'facebook_auth.dart';
 import 'firestore_rooms.dart';
 import 'room.dart';
 
@@ -23,6 +24,9 @@ List<Middleware<GameStore>> createStoreMiddleware(
     ),
     TypedMiddleware<GameStore, UpdateRoomAction>(
       _firestoreUpdateRoom(firestoreRooms),
+    ),
+    TypedMiddleware<GameStore, FacebookAuthAction>(
+      _facebookAuth(),
     ),
     NavigationMiddleware<GameStore>(),
     thunkMiddleware
@@ -90,6 +94,17 @@ void Function(
   return (Store<GameStore> store, UpdateRoomAction action,
       NextDispatcher next) {
     firestoreRooms.updateRoom(action.room);
+  };
+}
+
+void Function(
+  Store<GameStore> store,
+  FacebookAuthAction action,
+  NextDispatcher next,
+) _facebookAuth() {
+  return (Store<GameStore> store, FacebookAuthAction action,
+      NextDispatcher next) async {
+    await onFbLogin(store);
   };
 }
 

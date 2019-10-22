@@ -11,8 +11,9 @@ class Player implements Comparable<Player> {
   HandStrength handStrength;
   int playerIndex;
   bool replacedCards;
+  String playerName;
 
-  Player(this.playerIndex)
+  Player(this.playerIndex, this.playerName)
       : hand = Hand(),
         replacedCards = false;
 

@@ -45,11 +45,12 @@ class GamePage extends StatelessWidget {
           padding: const EdgeInsets.only(top: 150),
           child: AutoSizeText(
             '${viewModel.pageTitle}',
+            textAlign: TextAlign.center,
             style: TextStyle(
                 fontFamily: 'Casino3DFilledMarquee',
-                fontSize: 50,
+                fontSize: 30,
                 color: goldFontColor),
-            maxLines: 1,
+            maxLines: 2,
           ),
         ),
         Container(
@@ -114,7 +115,9 @@ class GamePage extends StatelessWidget {
                   key: Key(cardsKeyString + i.toString()),
                   child: (viewModel.coverCards)
                       ? PlayingCard.cardBackImage
-                      : card.cardImage,
+                      : Image(
+                          image: AssetImage(card.cardImagePath),
+                          fit: BoxFit.contain),
                   onPressed: (viewModel.coverCards)
                       ? null
                       : () => viewModel.onToggleSelectedCard(card)));
@@ -125,7 +128,7 @@ class GamePage extends StatelessWidget {
 }
 
 class _ViewModel {
-  final int currentPlayer;
+  final String currentPlayer;
   final bool coverCards;
   final Function() onUncoverCards;
   final Function() onReplaceCards;
@@ -142,16 +145,16 @@ class _ViewModel {
       this.onEndTurn,
       this.onToggleSelectedCard,
       this.playerCards)
-      : pageTitle = 'Player $currentPlayer';
+      : pageTitle = 'Player \r\n$currentPlayer';
 
   factory _ViewModel.create(Store<GameStore> store) {
-    final int currentPlayer = Dispatcher.getCurrentPlayer(store.state);
+    final int currentPlayer = Dispatcher.getCurrentPlayerIndex(store.state);
     final bool replacedCards = Dispatcher.getGameState(store.state)
         .players[currentPlayer]
         .replacedCards;
 
     return _ViewModel(
-        currentPlayer,
+        Dispatcher.getCurrentPlayerName(store.state),
         store.state.localStore.coverCards &&
             !store.state.localStore.isOnlineGame(),
         () => store.dispatch(UncoverCardsAction()),

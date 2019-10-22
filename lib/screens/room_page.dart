@@ -37,7 +37,7 @@ class RoomPage extends StatelessWidget {
                       padding: const EdgeInsets.all(5.0),
                       color: goldFontColor,
                       child: Text(
-                        'Player: ${viewModel.room.gameState.players[position].playerIndex}',
+                        'Player: ${viewModel.room.gameState.players[position].playerName}',
                         textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 22),
                       ),

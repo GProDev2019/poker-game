@@ -11,11 +11,12 @@ PlayingCard _$PlayingCardFromJson(Map<String, dynamic> json) {
     _$enumDecodeNullable(_$CardRankEnumMap, json['rank']),
     _$enumDecodeNullable(_$CardColorEnumMap, json['color']),
     json['selectedForReplace'] as bool,
-  );
+  )..cardImagePath = json['cardImagePath'] as String;
 }
 
 Map<String, dynamic> _$PlayingCardToJson(PlayingCard instance) =>
     <String, dynamic>{
+      'cardImagePath': instance.cardImagePath,
       'rank': _$CardRankEnumMap[instance.rank],
       'color': _$CardColorEnumMap[instance.color],
       'selectedForReplace': instance.selectedForReplace,

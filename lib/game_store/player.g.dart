@@ -9,6 +9,7 @@ part of 'player.dart';
 Player _$PlayerFromJson(Map<String, dynamic> json) {
   return Player(
     json['playerIndex'] as int,
+    json['playerName'] as String,
   )
     ..hand = json['hand'] == null
         ? null
@@ -24,4 +25,5 @@ Map<String, dynamic> _$PlayerToJson(Player instance) => <String, dynamic>{
       'handStrength': instance.handStrength,
       'playerIndex': instance.playerIndex,
       'replacedCards': instance.replacedCards,
+      'playerName': instance.playerName,
     };

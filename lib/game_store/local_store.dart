@@ -4,6 +4,7 @@ class LocalStore {
   bool onlineTurnEnded = false;
   bool coverCards = true;
   int currentOnlineRoom;
+  String playerName = '';
 
   bool isOnlineGame() {
     return onlinePlayerIndex != null;

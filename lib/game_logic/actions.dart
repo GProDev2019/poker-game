@@ -54,3 +54,10 @@ class DeleteRooomAction {
   final String roomId;
   DeleteRooomAction(this.roomId);
 }
+
+class FacebookAuthAction {}
+
+class SetPlayerNameAction {
+  final String playerName;
+  SetPlayerNameAction(this.playerName);
+}

@@ -13,7 +13,7 @@ class PlayingCard implements Comparable<PlayingCard> {
     image: AssetImage('assets/cards/red_back.png'),
     fit: BoxFit.contain,
   );
-  Image cardImage;
+  String cardImagePath;
   CardRank rank;
   CardColor color;
   bool selectedForReplace;
@@ -54,9 +54,7 @@ class PlayingCard implements Comparable<PlayingCard> {
         colorImagePath = 'S';
         break;
     }
-    cardImage = Image(
-        image: AssetImage('assets/cards/$rankImagePath$colorImagePath.png'),
-        fit: BoxFit.contain);
+    cardImagePath = 'assets/cards/$rankImagePath$colorImagePath.png';
   }
 
   @override

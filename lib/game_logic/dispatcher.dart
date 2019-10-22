@@ -55,6 +55,9 @@ class Dispatcher {
       case BackToMenuAction:
         _backToMenu();
         break;
+      case SetPlayerNameAction:
+        _setPlayerName(action);
+        break;
       default:
         throw "Unhandled action or store didn't change (Reducer shouldn't return the same store), action: ${action.toString()}";
     }
@@ -76,9 +79,17 @@ class Dispatcher {
     }
   }
 
-  static int getCurrentPlayer(GameStore store) {
+  static int getCurrentPlayerIndex(GameStore store) {
     return store.localStore.onlinePlayerIndex ??
         store.offlineGameState.currentPlayerIndex;
+  }
+
+  static String getCurrentPlayerName(GameStore store) {
+    if (store.localStore.playerName.isNotEmpty) {
+      return store.localStore.playerName;
+    } else {
+      return getCurrentPlayerIndex(store).toString();
+    }
   }
 
   static Room getCurrentOnlineRoom(GameStore store) {
@@ -102,7 +113,7 @@ class Dispatcher {
 
   void _updateNumberOfPlayers(int newNumofPlayers) {
     _state.players = List<Player>.generate(
-        newNumofPlayers, (int index) => Player(index),
+        newNumofPlayers, (int index) => Player(index, ''),
         growable: false);
   }
 
@@ -132,7 +143,8 @@ class Dispatcher {
         .length;
     _state = getGameState(_store);
     _state.numOfPlayers++;
-    _state.players.add(Player(_store.localStore.onlinePlayerIndex));
+    _state.players.add(Player(
+        _store.localStore.onlinePlayerIndex, _store.localStore.playerName));
     _store.localStore.waitingInRoom = true;
   }
 
@@ -196,7 +208,7 @@ class Dispatcher {
   }
 
   void _toggleCard(ToggleSelectedCardAction action) {
-    _state.players[getCurrentPlayer(_store)].hand.cards
+    _state.players[getCurrentPlayerIndex(_store)].hand.cards
         .firstWhere((PlayingCard card) =>
             card.color == action.selectedCard.color &&
             card.rank == action.selectedCard.rank)
@@ -208,7 +220,7 @@ class Dispatcher {
   }
 
   void _replaceCards() {
-    final int playerIndex = getCurrentPlayer(_store);
+    final int playerIndex = getCurrentPlayerIndex(_store);
     final int numOfCardsToReplace = _state.players[playerIndex].hand.cards
         .where((PlayingCard card) => card.selectedForReplace)
         .length;
@@ -251,5 +263,9 @@ class Dispatcher {
 
   void _backToMenu() {
     _state = null;
+  }
+
+  void _setPlayerName(SetPlayerNameAction action) {
+    _store.localStore.playerName = action.playerName;
   }
 }

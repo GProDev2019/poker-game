@@ -108,7 +108,11 @@ class ResultsPage extends StatelessWidget {
           const EdgeInsets padding = EdgeInsets.all(5);
           return Expanded(
               child: FlatButton(
-                  padding: padding, child: card.cardImage, onPressed: null));
+                  padding: padding,
+                  child: Image(
+                      image: AssetImage(card.cardImagePath),
+                      fit: BoxFit.contain),
+                  onPressed: null));
         }),
       ),
     );
