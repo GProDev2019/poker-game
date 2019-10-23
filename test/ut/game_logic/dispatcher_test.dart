@@ -12,8 +12,10 @@ class DispatcherTester {
   final GameStore store = GameStore();
 
   void testOfflineGameStart([int numOfPlayers = 2]) {
+    final List<String> playersNames = List<String>.generate(
+        numOfPlayers, (int pos) => 'Player ' + pos.toString());
     dispatcher.dispatchPokerGameAction(
-        store, StartOfflineGameAction(numOfPlayers));
+        store, StartOfflineGameAction(numOfPlayers, playersNames));
     expect(
         store.offlineGameState.deck.cards.length,
         Deck.numOfCards -

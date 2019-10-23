@@ -28,7 +28,7 @@ class RoomsPage extends StatelessWidget {
         const Padding(padding: EdgeInsets.all(7.0)),
         AutoSizeText(
           viewModel.playerName,
-          style: TextStyle(
+          style: const TextStyle(
               fontFamily: 'Casino', fontSize: 30, color: goldFontColor),
           maxFontSize: 30,
           maxLines: 1,

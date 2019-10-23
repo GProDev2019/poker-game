@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'constants.dart';
 
-Widget createPokerButton(String title, Function onPressed) {
+Widget createPokerButton(String title, Function onPressed, [Key key]) {
   return ButtonTheme(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     child: FlatButton(
@@ -12,6 +12,7 @@ Widget createPokerButton(String title, Function onPressed) {
         title,
         style: const TextStyle(fontFamily: 'Casino'),
         maxLines: 1,
+        key: key,
       ),
       onPressed: onPressed,
     ),

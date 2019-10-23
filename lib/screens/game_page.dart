@@ -128,7 +128,7 @@ class GamePage extends StatelessWidget {
 }
 
 class _ViewModel {
-  final String currentPlayer;
+  final String currentPlayerName;
   final bool coverCards;
   final Function() onUncoverCards;
   final Function() onReplaceCards;
@@ -138,14 +138,14 @@ class _ViewModel {
   final String pageTitle;
 
   _ViewModel(
-      this.currentPlayer,
+      this.currentPlayerName,
       this.coverCards,
       this.onUncoverCards,
       this.onReplaceCards,
       this.onEndTurn,
       this.onToggleSelectedCard,
       this.playerCards)
-      : pageTitle = 'Player \r\n$currentPlayer';
+      : pageTitle = '$currentPlayerName';
 
   factory _ViewModel.create(Store<GameStore> store) {
     final int currentPlayer = Dispatcher.getCurrentPlayerIndex(store.state);

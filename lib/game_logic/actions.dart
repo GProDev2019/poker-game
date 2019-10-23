@@ -3,7 +3,8 @@ import 'package:poker_game/middleware/room.dart';
 
 class StartOfflineGameAction {
   final int numOfPlayers;
-  StartOfflineGameAction(this.numOfPlayers);
+  final List<String> playersNames;
+  StartOfflineGameAction(this.numOfPlayers, this.playersNames);
 }
 
 class ToggleSelectedCardAction {

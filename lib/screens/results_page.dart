@@ -66,7 +66,7 @@ class ResultsPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              '${position + listIndexOffset}. Player ${viewModel.players[position].playerIndex.toString()}',
+                              '${position + listIndexOffset}. Player ${viewModel.players[position].playerName}',
                               style: const TextStyle(fontFamily: 'Casino'),
                             ),
                             winnerHighlight

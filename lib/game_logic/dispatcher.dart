@@ -85,10 +85,15 @@ class Dispatcher {
   }
 
   static String getCurrentPlayerName(GameStore store) {
-    if (store.localStore.playerName.isNotEmpty) {
-      return store.localStore.playerName;
+    if (store.localStore.isOnlineGame()) {
+      if (store.localStore.playerName.isNotEmpty) {
+        return store.localStore.playerName;
+      } else {
+        return getCurrentPlayerIndex(store).toString();
+      }
     } else {
-      return getCurrentPlayerIndex(store).toString();
+      return store.offlineGameState
+          .players[store.offlineGameState.currentPlayerIndex].playerName;
     }
   }
 
@@ -117,6 +122,12 @@ class Dispatcher {
         growable: false);
   }
 
+  void _updatePlayersNames(List<String> playersNames) {
+    for (int i = 0; i < _state.players.length; ++i) {
+      _state.players[i].playerName = playersNames[i];
+    }
+  }
+
   void _shuffleDeck() {
     _state.deck.cards.shuffle();
   }
@@ -124,6 +135,7 @@ class Dispatcher {
   void _startOfflineGame(StartOfflineGameAction action) {
     _createOfflineGame();
     _updateNumberOfPlayers(action.numOfPlayers);
+    _updatePlayersNames(action.playersNames);
     _shuffleDeck();
     _handOutCardsToPlayers();
   }
