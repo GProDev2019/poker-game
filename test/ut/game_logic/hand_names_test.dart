@@ -31,7 +31,6 @@ class HandStrengthTester {
 
 void main() {
   const int firstHandIsStronger = -1;
-  const int handsAreEqual = 0;
   const int secondHandIsStronger = 1;
   final HandStrengthTester handStrengthTester = HandStrengthTester();
   group('Hand strength comparison', () {

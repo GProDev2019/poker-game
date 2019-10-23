@@ -5,7 +5,6 @@ import 'package:flutter_redux_navigation/flutter_redux_navigation.dart';
 import 'package:poker_game/game_logic/actions.dart';
 import 'package:poker_game/game_store/game_state.dart';
 import 'package:poker_game/game_store/game_store.dart';
-import 'package:poker_game/middleware/facebook_auth.dart';
 import 'package:poker_game/middleware/room.dart';
 import 'package:poker_game/routes.dart';
 import 'package:poker_game/utils/constants.dart';

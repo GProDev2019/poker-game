@@ -12,7 +12,7 @@ Future<void> onFbLogin(Store<GameStore> store) async {
 
   final String token = result.accessToken.token;
   final http.Response graphResponse = await http.get(
-      'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${token}');
+      'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token');
   final dynamic profile = jsonDecode(graphResponse.body);
 
   switch (result.status) {

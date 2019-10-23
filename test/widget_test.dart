@@ -20,16 +20,19 @@ void main() {
     await tester.tap(find.byKey(StartPage.startGameButtonKey));
     await tester.pumpAndSettle();
 
-    final Finder cardWidget1 = find.byKey(Key(GamePage.cardsKeyString + '1'));
+    final Finder cardWidget1 =
+        find.byKey(const Key(GamePage.cardsKeyString + '1'));
     await tester.tap(cardWidget1);
 
     await tester.tap(find.byKey(GamePage.replaceCardsButtonKey));
     await tester.tap(find.byKey(GamePage.endTurnButtonKey));
     await tester.pump();
 
-    final Finder cardWidget3 = find.byKey(Key(GamePage.cardsKeyString + '3'));
+    final Finder cardWidget3 =
+        find.byKey(const Key(GamePage.cardsKeyString + '3'));
     await tester.tap(cardWidget3);
-    final Finder cardWidget4 = find.byKey(Key(GamePage.cardsKeyString + '4'));
+    final Finder cardWidget4 =
+        find.byKey(const Key(GamePage.cardsKeyString + '4'));
     await tester.tap(cardWidget4);
 
     await tester.tap(find.byKey(GamePage.replaceCardsButtonKey));
